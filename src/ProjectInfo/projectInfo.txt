@@ -1,0 +1,30 @@
++ Project Information :
+
+> Project Name : tractExpense
+> Github Repo Name : -
+> Github Repo Link : -
+> Live Project Link : -
+
+
+
+
++ Tech Stack : 
+
+> ReactJS
+> Firebase
+
+
+
+
++ Dependencies / Packages Used : 
+
+> Tailwind CSS : For styling components => used
+> LDRS : For animated loaders => used
+> Huge Icons : For cool icons => used
+> React Icons : For icons => used
+> Lucide Icons : For icons => used
+> React Router DOM : For Routing Management => used
+> Recharts : For different charts showing => used
+> D3-Shape : For more chart option => used
+> Dotenv : for API Security =>
+

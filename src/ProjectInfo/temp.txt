@@ -1,0 +1,8 @@
+Key Responsibilities:
+• Captured and converted document images into Base64 format for easy and secure API communication.
+• Integrated Gemini AI API to analyze document content and extract key personal details (e.g., name, DOB, address, ID numbers).
+• Parsed AI-generated JSON response to map data into corresponding web form fields.
+• Implemented input validation and error handling for low-resolution or incomplete documents.
+• Optimized extraction logic for varying layouts and document types.
+
+Technologies Used: ReactJS, Gemini AI API, HTML, CSS - Tailwind

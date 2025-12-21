@@ -1,0 +1,75 @@
+--------------------------------------------------------------------------------------------------------------
+
+Here is the current structure of your React components.
+
+Point to be Noted : 
+    📁  — Represents a Folder  
+    📦  — Represents a Component File and all Components under this are imported Components (*This does not include Commented Component Imports)
+
+🔍 Search Instructions:
+    • To search for an Individual components (e.g., `ExampleComponent.js`), include `📦 ` in the beginning :  
+      📦 App.js  
+    • To search for a specific Imported Components (e.g., `LandingPage.jsx`), include `─ ` in the beginning :  
+      ─ LandingPage.jsx
+
+This structure allows you to visually trace:
+    - Where a Component lives
+    - Which Components are imported inside others
+    - Line numbers where Imports occur (shown using `← line X`)
+
+--------------------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+└── 📁 src
+    |
+    ├── 📦 App.jsx
+    │   ├── LandingPage.jsx          ← line 19
+    │   ├── LinkError.jsx            ← line 20
+    │   ├── Login.jsx                ← line 21
+    │   ├── Signup.jsx               ← line 22
+    │   ├── SpendingChart.jsx        ← line 24
+    │   ├── FinancialChart.jsx       ← line 25
+    │   └── ContentContainer.jsx     ← line 26
+    │   
+    └── 📁 components
+        |
+        ├── 📦 SpendingChart.jsx
+        │   ├── FinancialChart.jsx          ← line 5
+        │   └── AddTransactionModal.jsx     ← line 6
+        │   
+        ├── 📦 SideNavbar.jsx
+        │   
+        ├── 📦 ShowCategoryToIcon.jsx
+        │   
+        ├── 📦 LinkError.jsx
+        │   └── Noise.jsx     ← line 8
+        │   
+        ├── 📦 LandingPage.jsx
+        │   
+        ├── 📦 FinancialChart.jsx
+        │   
+        ├── 📦 ContentContainer.jsx
+        │   ├── SpendingChart.jsx          ← line 2
+        │   ├── SideNavbar.jsx             ← line 20
+        │   └── AllTransactionView.jsx     ← line 21
+        │   
+        ├── 📦 AllTransactionView.jsx
+        │   └── ShowCategoryToIcon.jsx     ← line 28
+        │   
+        ├── 📦 AddTransactionModal.jsx
+        │   
+        ├── 📁 auth
+        │   |
+        │   ├── 📦 Signup.jsx
+        │   │   
+        │   └── 📦 Login.jsx
+        │       
+        └── 📁 animations
+            |
+            └── 📦 Noise.jsx
+                

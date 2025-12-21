@@ -1,0 +1,458 @@
+import React, { useEffect } from "react";
+import { auth } from "../../firebase";
+import { signInWithEmailAndPassword, signOut } from "firebase/auth";
+import { FcGoogle } from "react-icons/fc";
+
+import { useState } from "react";
+import { Eye, EyeOff } from "lucide-react";
+import { useNavigate, useParams } from "react-router-dom";
+import { onAuthStateChanged } from "firebase/auth";
+
+export default function Login(props) {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [emailField, setEmailField] = useState(false);
+  const [passwordField, setPasswordField] = useState(false);
+  const [showPass, setShowPass] = useState(false);
+  const [error, setError] = useState("");
+  const [errorInfo, setErrorInfo] = useState({
+    email: false,
+    password: false,
+    errorDetails: "",
+  });
+  const [loading, setLoading] = useState({
+    state: false,
+    statusInitial: "Validating login credentials ...",
+    error: false,
+    statusError: "Oops ! Invalid login credentials",
+    success: false,
+    statusSuccess: "Credentials validated ! Redirecting ...",
+  });
+
+  useEffect(() => {
+    const listen = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        console.log(
+          "%cYou'r %clogged in%c!\nTaking you to the %cHome Page%c.",
+          "color: #21da0f;",
+          "color: #21da0f; font-weight: bold;",
+          "color: #21da0f;",
+          "color: #21da0f; font-weight: bold;",
+          "color: #21da0f;"
+        );
+        // signOut(auth)
+        //   .then(() =>
+        //     console.log(
+        //       "%cYou have successfuly %cSigned Out%c !",
+        //       "color: #21da0f;",
+        //       "color: #21da0f; font-weight: bold;",
+        //       "color: #21da0f;"
+        //     )
+        //   )
+        //   .catch((error) => console.log(error));
+        navigateToLoggedInPage(user.uid);
+        console.log(
+          "%cWelcome to %cExpense Tracker App%c .",
+          "",
+          "color: #eccd08; font-weight: bold;",
+          ""
+        );
+      } else {
+        console.log(
+          "%cYou are not %cLogged In%c !",
+          "color: orange;",
+          "color: orange; font-weight: bold;",
+          "color: orange;"
+        );
+      }
+    });
+    return () => {
+      console.log("%cChecking login state ...", "color: #acacac");
+      listen();
+    };
+  }, []);
+
+  // const signIn = () => {
+  //   if (!email.includes("@gmail.com")) {
+  //     setError("Email must contain '@gmail.com'");
+  //   } else if (password.length < 8) {
+  //     setError("Password should be atleast 8 characters");
+  //   } else {
+  //     signInWithEmailAndPassword(
+  //       auth,
+  //       email.trim().split("@gmail.com")[0] + ".splitwise@gmail.com",
+  //       password
+  //     )
+  //       .then((userCredential) => {
+  //         // console.log(userCredential);
+  //         console.log(
+  //           "%cYou have successfuly %cLoged In%c !",
+  //           "color: #21da0f;",
+  //           "color: #21da0f; font-weight: bold;",
+  //           "color: #21da0f;"
+  //         );
+  //         navigateToLoggedInPage(userCredential?.user?.uid);
+  //       })
+  //       .catch((error) => {
+  //         // toast.error("Invalid Login Credentials");
+  //         console.log(
+  //           "%cOops, %cInvalid Login Credentials%c !",
+  //           "color: red;",
+  //           "color: red; font-weight: bold;",
+  //           "color: red;"
+  //         );
+  //         setError("Oops! Invalid Login Credentials");
+  //         // toast.error(error.message);
+  //         // console.log(error);
+  //         // console.log(error.message);
+  //       });
+  //   }
+  // };
+  // function changeMode() {
+  //   dispatch(toggleStateMode(2));
+  // }
+
+  const signIn = () => {
+    if (email?.toLowerCase()?.includes("@gmail.com") && password?.length >= 8) {
+      setLoading((prev) => ({
+        ...prev,
+        state: true,
+      }));
+    }
+
+    let obj = errorInfo;
+
+    if (!email?.toLowerCase()?.includes("@gmail.com")) {
+      obj = {
+        email: true,
+        password: obj.password,
+        errorDetails: "",
+      };
+    }
+    if (password?.length < 8) {
+      obj = {
+        email: obj.email,
+        password: true,
+        errorDetails: "",
+      };
+    }
+
+    if (email?.toLowerCase()?.includes("@gmail.com") && password?.length >= 8) {
+      signInWithEmailAndPassword(
+        auth,
+        email.trim().split("@gmail.com")[0] + ".splitwise@gmail.com",
+        password
+      )
+        .then((userCredential) => {
+          setLoading((prev) => ({
+            ...prev,
+            success: true,
+          }));
+
+          setTimeout(() => {
+            setLoading((prev) => ({
+              ...prev,
+              state: false,
+              success: false,
+            }));
+
+            console.log("Arora Space => Logged in successfully !");
+            navigateToLoggedInPage(userCredential?.user?.uid);
+          }, 1500);
+        })
+        .catch((error) => {
+          setErrorInfo({
+            email: false,
+            password: false,
+            errorDetails: "Oops! Invalid Login Credentials",
+          });
+
+          setLoading((prev) => ({
+            ...prev,
+            error: true,
+          }));
+
+          setTimeout(() => {
+            setLoading((prev) => ({
+              ...prev,
+              state: false,
+              error: false,
+            }));
+          }, 1500);
+        });
+    }
+
+    setErrorInfo(obj);
+  };
+
+  const navigate = useNavigate();
+  function navigateToSection() {
+    navigate(`/user/signup`);
+  }
+
+  function navigateToLoggedInPage(id) {
+    navigate(`/user/welcomeUser/user?ID=${id}`);
+  }
+
+  return (
+    <>
+      {/* <ClickSpark
+        sparkColor="#000"
+        sparkSize={10}
+        sparkRadius={15}
+        sparkCount={8}
+        duration={400}
+      /> */}
+      <div className="w-full h-[100svh] flex justify-center items-center font-[geist]">
+        <div
+          className="w-full lg:w-[400px] md:w-[400px] p-[40px] py-[20px] rounded-none md:rounded-xl lg:rounded-xl min-h-[100svh] md:min-h-[75%] lg:min-h-[75%]  flex flex-col justify-center md:justify-center lg:justify-center items-start bg-[white] px-[50px] text-[14px] max-h-full md:max-h-[100%] lg:max-h-[100%]"
+          // style={{ zIndex: "0" }}
+        >
+          <div
+            style={{ zIndex: "10" }}
+            className="w-full flex justify-center items-center mb-[30px]"
+          >
+            <button
+              className="w-[80px] h-[80px] p-[13px] rounded-lg bg-[#f7f7f7]"
+              onClick={() => {
+                // navigateToHome();
+              }}
+            >
+              {/* <img src={logo} className=" w-full h-full object-fill "></img> */}
+            </button>
+          </div>
+          <div
+            style={{ zIndex: "10" }}
+            className=" font-[geistSemibold] text-[26px] mb-[5px] w-full flex justify-center"
+          >
+            Yooo, welcome back!
+          </div>
+          <div
+            style={{ zIndex: "10" }}
+            className=" w-full flex justify-center items-center text-[#00000078] mb-[20px]"
+          >
+            First time here ?{" "}
+            <button
+              className="px-[3px] mx-[2px] text-[black] cursor-pointer"
+              onClick={() => {
+                navigateToSection();
+              }}
+            >
+              Sign Up for free
+            </button>
+          </div>
+          <div
+            style={{ zIndex: "10" }}
+            className=" w-full h-[40px] flex flex-col justify-start items-start mt-[20px] "
+          >
+            <div
+              className={
+                "w-full min-h-full max-h-full mb-[-40px] flex items-start justify-start pl-[10px] " +
+                (emailField || email.length > 0
+                  ? " pt-[0px] text-[11px]"
+                  : " pt-[20px] text-[13px]")
+              }
+              style={{ transition: ".3s" }}
+            >
+              <div
+                className={
+                  "bg-[#ffffff] h-[4px] mt-[-2px] font-[300]  flex justify-center items-center px-[3px] text-[#0000004d]" +
+                  (emailField || email.length > 0 ? " z-[10]" : " z-[0]")
+                }
+                style={{
+                  zIndex: emailField || email.length > 0 ? "100" : "0",
+                  // transition: ".3s",
+                }}
+              >
+                Email
+              </div>
+            </div>
+            <input
+              id="emailField"
+              className=" w-full  h-[40px] border-[1px] border-[#d5d5d500] rounded-lg bg-transparent px-[12px]"
+              // placeholderTextColor="#000000"
+              style={{
+                zIndex: "5",
+                outline: errorInfo?.email
+                  ? "2px solid #ce3d00"
+                  : "1px solid #d5d5d5" /* Force an outline */,
+                outlineOffset: "0px",
+              }}
+              value={email}
+              onChange={(e) => {
+                if (errorInfo?.email) {
+                  setErrorInfo({
+                    email: false,
+                    password: errorInfo?.password,
+                    errorDetails: "",
+                  });
+                }
+                setEmail(e.target.value);
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  if (email.length == 0) {
+                    console.log("Please enter your email !");
+                    document.getElementById("emailField").focus();
+                  } else if (password.length == 0) {
+                    console.log("Please choose any password !");
+                    document.getElementById("passwordField").focus();
+                  } else if (email.length > 0 && password.length > 0) {
+                    console.log("We are processing the details !");
+                    signIn();
+                  }
+
+                  // signUp();
+                }
+              }}
+              onFocus={() => {
+                setEmailField(true);
+              }}
+              onBlur={() => {
+                setEmailField(false);
+              }}
+            ></input>
+          </div>
+          <div
+            style={{ zIndex: "10" }}
+            className=" w-full h-[40px] flex flex-col justify-start items-start mt-[15px] "
+          >
+            <div
+              className={
+                "w-full min-h-full max-h-full mb-[-40px] flex items-start justify-start pl-[10px] " +
+                (passwordField || password.length > 0
+                  ? " pt-[0px] text-[11px]"
+                  : " pt-[20px] text-[13px]")
+              }
+              style={{ transition: ".3s" }}
+            >
+              <div
+                className={
+                  "bg-[#ffffff] h-[4px] mt-[-2px]  flex justify-center items-center px-[3px] text-[#0000004d]" +
+                  (passwordField || password.length > 0 ? " z-[10]" : " z-[0]")
+                }
+                style={{
+                  zIndex: passwordField || password.length > 0 ? "100" : "0",
+                  // transition: ".3s",
+                }}
+              >
+                Password
+              </div>
+            </div>
+            <div
+              className="w-full h-[40px]  bg-transparent flex justify-start items-center "
+              style={{ zIndex: "5" }}
+            >
+              <input
+                id="passwordField"
+                className="w-full h-[40px] border-[1.5px] border-[#ededed00] rounded-lg bg-transparent px-[12px] pr-[52px]   "
+                style={{
+                  zIndex: "5",
+                  outline: errorInfo?.password
+                    ? "2px solid #ce3d00"
+                    : "1px solid #d5d5d5" /* Force an outline */,
+                  outlineOffset: "0px",
+                }}
+                value={password}
+                type={!showPass ? "password" : "text"}
+                onChange={(e) => {
+                  if (errorInfo?.password) {
+                    setErrorInfo({
+                      email: errorInfo?.email,
+                      password: false,
+                      errorDetails: "",
+                    });
+                  }
+                  setPassword(e.target.value);
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    if (email.length == 0) {
+                      console.log("Please enter your email !");
+                      document.getElementById("emailField").focus();
+                    } else if (password.length == 0) {
+                      console.log("Please choose any password !");
+                      document.getElementById("passwordField").focus();
+                    } else if (email.length > 0 && password.length > 0) {
+                      console.log("We are processing the details !");
+                      signIn();
+                    }
+
+                    // signUp();
+                  }
+                }}
+                onFocus={() => {
+                  setPasswordField(true);
+                }}
+                onBlur={() => {
+                  setPasswordField(false);
+                }}
+              ></input>
+              <button
+                className="w-[40px] h-full ml-[-40px] flex justify-center items-center cursor-pointer z-20"
+                onClick={() => {
+                  setShowPass(!showPass);
+                }}
+              >
+                {showPass ? (
+                  <EyeOff width={15} height={15} strokeWidth={1.7} />
+                ) : (
+                  <Eye width={15} height={15} strokeWidth={1.7} />
+                )}
+              </button>
+            </div>
+          </div>
+
+          <div
+            style={{ zIndex: "10" }}
+            className={
+              " w-full flex justify-end items-center text-[12px] mt-[5px] text-[#ff3b00]" +
+              (error.length > 0 ? " flex" : " hidden")
+            }
+          >
+            <div>{error} *</div>
+          </div>
+          <button
+            style={{ zIndex: "10" }}
+            className=" w-full h-[40px] mt-[30px] rounded-lg font-[700] tracking-wider bg-[#000000] hover:bg-[#252525] text-[white] text-[14px] flex justify-center items-center cursor-pointer"
+            onClick={() => {
+              signIn();
+            }}
+          >
+            Log In
+          </button>
+
+          <div className="w-full h-[40px] mt-[0px] rounded-lg text-[12px] flex justify-between items-center text-[#9ba6aa]">
+            <div className="w-[calc((100%-40px)/2)] border-t-[1.5px] border-t-[#ededed]"></div>
+            <div className="">or</div>
+            <div className="w-[calc((100%-40px)/2)] border-t-[1.5px] border-t-[#ededed]"></div>
+          </div>
+          <div
+            style={{ zIndex: "10" }}
+            className=" w-full h-[40px] border-[1.5px] border-[#ededed] rounded-lg bg-transparent px-[12px] flex justify-center items-center  cursor-pointer"
+          >
+            <span>
+              <FcGoogle className="text-[18px] mr-[10px]" />
+            </span>
+            <span>Sign up with Google</span>
+          </div>
+          <div className="text-[12px] text-center text-[#b3b3b3] mt-[30px] w-full z-[2]">
+            You acknowledge that you read, and agree, to our
+          </div>
+          <div className="text-[12px] text-center text-[#b3b3b3] mt-[0px] w-full z-[2]">
+            <button className="text-[#454545] mx-[0px] underline underline-offset-[2px]">
+              Terms of Service
+            </button>{" "}
+            and{" "}
+            <button className="text-[#454545] mx-[0px] underline underline-offset-[2px]">
+              Privacy Policy
+            </button>
+            .
+          </div>
+        </div>{" "}
+      </div>
+    </>
+  );
+}

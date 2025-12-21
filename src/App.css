@@ -1,0 +1,168 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ------------ Importing Fonts ------------ */
+
+@font-face {
+  font-family: grm;
+  src: url(./assets/font/EBGaramond-Medium.ttf);
+}
+@font-face {
+  font-family: geistRegular;
+  src: url(./assets/font/Geist-Regular.ttf);
+}
+@font-face {
+  font-family: geistSemibold;
+  src: url(./assets/font/Geist-SemiBold.ttf);
+}
+@font-face {
+  font-family: geistBold;
+  src: url(./assets/font/Geist-Bold.ttf);
+}
+@font-face {
+  font-family: geistExtrabold;
+  src: url(./assets/font/Geist-ExtraBold.ttf);
+}
+@font-face {
+  font-family: geistMedium;
+  src: url(./assets/font/Geist-Medium.ttf);
+}
+@font-face {
+  font-family: geistLight;
+  src: url(./assets/font/Geist-Light.ttf);
+}
+
+@font-face {
+  font-family: gmr;
+  src: url(./assets/font/GeistMono-Regular.ttf);
+}
+@font-face {
+  font-family: gmm;
+  src: url(./assets/font/GeistMono-Medium.ttf);
+}
+@font-face {
+  font-family: gmsb;
+  src: url(./assets/font/GeistMono-SemiBold.ttf);
+}
+@font-face {
+  font-family: gmb;
+  src: url(./assets/font/GeistMono-Bold.ttf);
+}
+@font-face {
+  font-family: gmeb;
+  src: url(./assets/font/GeistMono-ExtraBold.ttf);
+}
+
+@font-face {
+  font-family: tnr;
+  src: url(./assets/font/TextaNarrow-Regular.ttf);
+}
+@font-face {
+  font-family: tnm;
+  src: url(./assets/font/TextaNarrow-Medium.ttf);
+}
+@font-face {
+  font-family: tnb;
+  src: url(./assets/font/TextaNarrow-Bold.ttf);
+}
+@font-face {
+  font-family: tnh;
+  src: url(./assets/font/TextaNarrow-Heavy.ttf);
+}
+
+@font-face {
+  font-family: recoleta;
+  src: url(./assets/font/Recoleta-RegularDEMO.otf);
+}
+@font-face {
+  font-family: DMSr;
+  src: url(./assets/font/DMSans-Regular.ttf);
+}
+@font-face {
+  font-family: DMSm;
+  src: url(./assets/font/DMSans-Medium.ttf);
+}
+@font-face {
+  font-family: DMSb;
+  src: url(./assets/font/DMSans-Bold.ttf);
+}
+@font-face {
+  font-family: DMMr;
+  src: url(./assets/font/DMMono-Regular.ttf);
+}
+@font-face {
+  font-family: jetr;
+  src: url(./assets/font/JetBrainsMono-Regular.ttf);
+}
+@font-face {
+  font-family: jetm;
+  src: url(./assets/font/JetBrainsMono-Medium.ttf);
+}
+@font-face {
+  font-family: il;
+  src: url(./assets/font/Inter_28pt-Light.ttf);
+}
+@font-face {
+  font-family: ir;
+  src: url(./assets/font/Inter_28pt-Regular.ttf);
+}
+@font-face {
+  font-family: im;
+  src: url(./assets/font/Inter_28pt-Medium.ttf);
+}
+@font-face {
+  font-family: isb;
+  src: url(./assets/font/Inter_28pt-SemiBold.ttf);
+}
+@font-face {
+  font-family: ib;
+  src: url(./assets/font/Inter_28pt-Bold.ttf);
+}
+@font-face {
+  font-family: ieb;
+  src: url(./assets/font/Inter_28pt-ExtraBold.ttf);
+}
+
+@font-face {
+  font-family: gs;
+  src: url(./assets/font/Ckhans-Fonts-Gravitica-Slab-Light-Demo.otf);
+}
+
+/* ------------- */
+
+@font-face {
+  font-family: eb;
+  src: url(./assets/font/newFonts/EudoxusSans-Bold.ttf);
+}
+@font-face {
+  font-family: eeb;
+  src: url(./assets/font/newFonts/EudoxusSans-ExtraBold.ttf);
+}
+@font-face {
+  font-family: er;
+  src: url(./assets/font/newFonts/EudoxusSans-Regular.ttf);
+}
+@font-face {
+  font-family: em;
+  src: url(./assets/font/newFonts/EudoxusSans-Medium.ttf);
+}
+@font-face {
+  font-family: pr;
+  src: url(./assets/font/newFonts/POIAeronautTrial-Regular.otf);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Apply animation to element */
+.fade-in {
+  opacity: 0;
+  animation: fadeIn 0.3s ease-in-out 0.1s forwards;
+}
