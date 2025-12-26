@@ -509,7 +509,7 @@ export default function SplitSpacesList({ allSpaceInfo, setActiveSplitSpace }) {
                   >
                     <div className="w-full flex justify-between items-center font-[600] text-[16px]">
                       <div className="w-full overflow-hidden whitespace-nowrap text-ellipsis">
-                        {data?.spaceName} sjd fkjs df s dfh shd f
+                        {data?.spaceName}
                       </div>
                     </div>
                     <div className="w-full flex justify-start items-center mt-[10px]">

@@ -549,6 +549,7 @@ export default function ContentContainer(props) {
           activeSection={activeSection}
           allSpaceInfoTemp={allSpaceInfoTemp}
           setAllSpaceInfoTemp={setAllSpaceInfoTemp}
+          accountInfo={accountInfo}
         />
       )}
 

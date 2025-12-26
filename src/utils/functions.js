@@ -642,6 +642,76 @@ function containInCharacterCount(value, maxCount) {
     return value;
   }
 }
+function groupAndSortTransactions(transactions) {
+  // 1️⃣ Sort by date-time (latest first)
+  const sorted = [...transactions].sort(
+    (a, b) => new Date(b.transactionDate) - new Date(a.transactionDate)
+  );
+
+  const result = [];
+  const groupedDates = new Map();
+
+  // 2️⃣ Group by DATE ONLY (YYYY-MM-DD)
+  sorted.forEach((tx) => {
+    const dateOnly = new Date(tx.transactionDate).toISOString().split("T")[0];
+
+    if (!groupedDates.has(dateOnly)) {
+      groupedDates.set(dateOnly, []);
+    }
+
+    groupedDates.get(dateOnly).push(tx);
+  });
+
+  // 3️⃣ Build flat array
+  groupedDates.forEach((transactions, dateOnly) => {
+    result.push({
+      isGroup: true,
+      groupDate: `${dateOnly}T00:00:00.000Z`, // normalized date
+      totalTransactions: transactions.length,
+    });
+
+    result.push(...transactions);
+  });
+
+  return result;
+}
+
+function getOrdinalSuffix(day) {
+  if (day >= 11 && day <= 13) return "th";
+
+  switch (day % 10) {
+    case 1:
+      return "st";
+    case 2:
+      return "nd";
+    case 3:
+      return "rd";
+    default:
+      return "th";
+  }
+}
+
+function formatTransactionDate(isoString) {
+  const inputDate = new Date(isoString);
+  const today = new Date();
+
+  // Normalize dates (remove time)
+  inputDate.setHours(0, 0, 0, 0);
+  today.setHours(0, 0, 0, 0);
+
+  const diffInDays = (today - inputDate) / (1000 * 60 * 60 * 24);
+
+  if (diffInDays === 0) return "Today";
+  if (diffInDays === 1) return "Yesterday";
+
+  const day = inputDate.getDate();
+  const month = inputDate.toLocaleString("en-US", {
+    month: "short",
+  });
+  const year = inputDate.getFullYear();
+
+  return `${day}${getOrdinalSuffix(day)} ${month}, ${year}`;
+}
 
 export {
   changeMonthIndex,
@@ -658,4 +728,6 @@ export {
   getPeriodWiseComparison,
   requirementOnlyNumber,
   containInCharacterCount,
+  groupAndSortTransactions,
+  formatTransactionDate,
 };

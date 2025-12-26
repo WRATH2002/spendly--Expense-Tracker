@@ -16,11 +16,19 @@ import {
 import firebase from "../firebase";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
+  Add01Icon,
   ArrowDown01Icon,
+  ArrowDownLeft01Icon,
+  ArrowMoveDownRightIcon,
+  ArrowUpRight01Icon,
   Cancel01Icon,
   Search01Icon,
   UserMultiple02Icon,
 } from "@hugeicons/core-free-icons";
+import DropDownInput from "./DropDownInput";
+import { categories } from "../utils/categoryToIconSVGMapping";
+import { paymentTypeOptions } from "../utils/constants";
+import DateInput from "./DateInput";
 
 const listOfNames = [
   "Groceries",
@@ -43,6 +51,7 @@ export default function AddSplitTransactionModal({
   activeSection,
   allSpaceInfoTemp,
   setAllSpaceInfoTemp,
+  accountInfo,
 }) {
   const [includeToSplit, setIncludeToSplit] = useState(false);
   const [selectedMember, setSelectedMember] = useState([]);
@@ -51,13 +60,17 @@ export default function AddSplitTransactionModal({
   const [name, setName] = useState("");
   const [amount, setAmount] = useState("");
   const [detail, setDetail] = useState("");
-  const [date, setDate] = useState("");
+  const [paymentType, setPaymentType] = useState("");
+  const [date, setDate] = useState(new Date().toISOString()?.split("T")[0]);
   const [category, setCategory] = useState("");
 
   const [tempSelectSpace, setTempSelectSpace] = useState([]);
 
   const [showModal, setShowModal] = useState(false);
   const [searchText, setSearchText] = useState("");
+
+  const [showDropdown, setShowDropdown] = useState("");
+  const [isInward, setIsInward] = useState(true);
 
   useEffect(() => {
     if (activeSection == "split") {
@@ -102,7 +115,7 @@ export default function AddSplitTransactionModal({
         isEditable: true,
         hasRequirements: false,
         inputType: "tel",
-        inputComponent: "NormalInput",
+        inputComponent: "DateInput",
         requirementFunction: requirementOnlyNumber,
       },
     ],
@@ -110,26 +123,32 @@ export default function AddSplitTransactionModal({
       {
         label: "Category",
         isRequired: true,
-        placeholder: "eg: 1500.89",
+        placeholder: "eg: Transport",
         value: category,
         setValue: setCategory,
-        isEditable: true,
-        hasRequirements: false,
+        isEditable: false,
+        // hasRequirements: false,
         inputType: "text",
-        inputComponent: "NormalInput",
-        requirementFunction: requirementOnlyNumber,
+        inputComponent: "DropdownInput",
+        dropDownList: categories,
+        showDropdown: showDropdown,
+        setShowDropdown: setShowDropdown,
+        // requirementFunction: requirementOnlyNumber,
       },
       {
         label: "Payment Type",
         isRequired: true,
-        placeholder: "eg: 1500.89",
-        value: amount,
-        setValue: setAmount,
-        isEditable: true,
-        hasRequirements: false,
+        placeholder: "eg: Online",
+        value: paymentType,
+        setValue: setPaymentType,
+        isEditable: false,
+        // hasRequirements: false,
         inputType: "text",
-        inputComponent: "NormalInput",
-        requirementFunction: requirementOnlyNumber,
+        inputComponent: "DropdownInput",
+        dropDownList: paymentTypeOptions,
+        showDropdown: showDropdown,
+        setShowDropdown: setShowDropdown,
+        // requirementFunction: requirementOnlyNumber,
       },
     ],
     [
@@ -153,45 +172,47 @@ export default function AddSplitTransactionModal({
     // console.log("adding split transaction", generateCurrentDateTime());
     const user = firebase.auth().currentUser;
     console.log("Zf");
-    // if (includeToSplit) {
-    db.collection("userSpace")
-      .doc(user?.uid)
-      .collection("AllTransactionsSpace")
-      .doc("SplitTransactions")
-      .collection(tempSelectSpace[0]?.spaceName?.toLowerCase())
-      .doc(tempSelectSpace[0]?.spaceName?.toLowerCase())
-      .update({
-        SplitTransactions: arrayUnion({
-          name: name,
-          date: new Date().toISOString(),
-          type: "split",
-          payeeName: "Himadri Purkait",
-          amount: amount,
-          detail: detail,
-          category: "Food",
-        }),
-      });
-    // } else {
-    // db.collection("userSpace")
-    //   .doc(user?.uid)
-    //   .collection("AllTransactionsSpace")
-    //   .doc("SplitTransactions")
-    //   .update({
-    //     SplitTransactions: arrayUnion({
-    //       transactionName: transactionName,
-    //       // transactionID: transactionID,
-    //       transactionDate: generateCurrentDateTime(),
-    //       // transactionMode: transactionMode,
-    //       transactionType: "split",
-    //       payeeName: selectedMember,
-    //       // transactionBillURL: transactionBillURL,
-    //       transactionAmount: transactionAmount,
-    //       // transactionCategory: transactionCategory,
-    //       // splittedMemberCount: splittedMemberCount,
-    //       // splittedMemberIDS: splittedMemberIDS,
-    //     }),
-    //   });
-    // }
+    if (includeToSplit) {
+      console.log("split");
+      // db.collection("userSpace")
+      //   .doc(user?.uid)
+      //   .collection("AllTransactionsSpace")
+      //   .doc("SplitTransactions")
+      //   .collection(tempSelectSpace[0]?.spaceName?.toLowerCase())
+      //   .doc(tempSelectSpace[0]?.spaceName?.toLowerCase())
+      //   .update({
+      //     SplitTransactions: arrayUnion({
+      //       name: name,
+      //       date: new Date().toISOString(),
+      //       type: "split",
+      //       payeeName: "Himadri Purkait",
+      //       amount: amount,
+      //       detail: detail,
+      //       category: "Food",
+      //     }),
+      //   });
+    } else {
+      console.log("normal");
+      db.collection("userSpace")
+        .doc(user?.uid)
+        ?.collection("AllTransactionsSpace")
+        .doc("AllTransactions")
+        .update({
+          AllTransactions: arrayUnion({
+            transactionName: name,
+            transactionAmount: amount,
+            transactionDate: new Date(date).toISOString(),
+            transactionCategory: category,
+            transactionPaymentType: paymentType,
+            transactionType: "normal",
+            isInward: !isInward,
+            transactionDetail: detail,
+            payeeName: accountInfo?.name,
+            transactionStatus: "Completed",
+          }),
+        });
+    }
+    setShowAddTransactionModal(false);
   }
 
   function filterData() {
@@ -303,6 +324,7 @@ export default function AddSplitTransactionModal({
           className="w-full max-h-[80%] bg-[#1b1b1b] rounded-3xl flex flex-col justify-end items-start overflow-hidden border-[1.5px] border-[#232323]"
           onClick={(e) => {
             e.stopPropagation();
+            setShowDropdown("");
           }}
         >
           <div className="w-full h-full flex flex-col justify-start items-start overflow-y-scroll py-[20px] px-[20px]">
@@ -320,6 +342,53 @@ export default function AddSplitTransactionModal({
             {formFormat.map((row, rowIndex) => {
               return (
                 <>
+                  {rowIndex == 1 && (
+                    <div className="w-full flex justify-between items-center text-[14px] mt-[15px] rounded-md min-h-[44px] px-[15px] pr-[8px] bg-[#3e3e3e] border border-[#464646]">
+                      <div>Count this payment in Expense</div>
+                      <div
+                        className={
+                          "w-[40px] h-[28px] rounded-full flex justify-start items-center  " +
+                          (isInward
+                            ? " ml-[15px] bg-[#000000]"
+                            : " bg-[#000000]")
+                        }
+                        style={{ transition: ".3s" }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setIsInward(!isInward);
+                        }}
+                      >
+                        <div
+                          className={
+                            "h-[22px] w-[22px] rounded-full flex justify-center items-center  " +
+                            (isInward
+                              ? " ml-[15px] bg-[#bd4812]"
+                              : " ml-[3px] bg-[#87bd12]")
+                          }
+                          style={{ transition: ".3s" }}
+                        >
+                          {/* {!isInward ? ( */}
+                          <HugeiconsIcon
+                            icon={ArrowDownLeft01Icon}
+                            size={16}
+                            strokeWidth={3}
+                            className={
+                              "" + (isInward ? " rotate-180" : " rotate-0")
+                            }
+                            style={{ transition: ".3s" }}
+                          />
+                          {/* ) : (
+                            <HugeiconsIcon
+                              icon={ArrowUpRight01Icon}
+                              size={16}
+                              strokeWidth={3}
+                              className=""
+                            />
+                          )} */}
+                        </div>
+                      </div>
+                    </div>
+                  )}
                   {row.length > 1 ? (
                     <div
                       key={rowIndex}
@@ -371,6 +440,61 @@ export default function AddSplitTransactionModal({
                                   }
                                 />
                               </div>
+                            ) : field?.inputComponent == "DropdownInput" ? (
+                              <>
+                                <div
+                                  key={`rowIndex_${fieldIndex}`}
+                                  className="w-[calc((100%-12px)/2)]"
+                                >
+                                  <DropDownInput
+                                    isEditable={field?.isEditable}
+                                    label={field?.label}
+                                    isRequired={field?.isRequired}
+                                    placeholder={field?.placeholder}
+                                    value={field?.value}
+                                    setValue={field?.setValue}
+                                    // hasRequirements={field?.hasRequirements}
+                                    inputType={field?.inputType}
+                                    dropDownList={field?.dropDownList}
+                                    showDropdown={showDropdown}
+                                    setShowDropdown={setShowDropdown}
+                                    // requirementFunction={
+                                    //   field?.requirementFunction
+                                    // }
+                                    // doValidationCheck={
+                                    //   field?.doValidationCheck
+                                    // }
+                                    // validationCheckWith={
+                                    //   field?.validationCheckWith
+                                    // }
+                                  />
+                                </div>
+                              </>
+                            ) : field?.inputComponent == "DateInput" ? (
+                              <>
+                                <div
+                                  key={`rowIndex_${fieldIndex}`}
+                                  className="w-[calc((100%-12px)/2)]"
+                                >
+                                  <DateInput
+                                    isEditable={field?.isEditable}
+                                    label={field?.label}
+                                    isRequired={field?.isRequired}
+                                    placeholder={field?.placeholder}
+                                    value={field?.value}
+                                    setValue={field?.setValue}
+                                    hasRequirements={field?.hasRequirements}
+                                    inputType={field?.inputType}
+                                    requirementFunction={
+                                      field?.requirementFunction
+                                    }
+                                    doValidationCheck={field?.doValidationCheck}
+                                    validationCheckWith={
+                                      field?.validationCheckWith
+                                    }
+                                  />
+                                </div>
+                              </>
                             ) : (
                               <></>
                             )}
@@ -379,63 +503,241 @@ export default function AddSplitTransactionModal({
                       })}
                     </div>
                   ) : (
-                    <div
-                      key={rowIndex}
-                      className="w-full mt-[15px] flex justify-between items-start"
-                    >
-                      {row.map((field, fieldIndex) => {
-                        return (
-                          <>
-                            {field.inputComponent == "TextAreaInput" ? (
-                              <div
-                                key={`rowIndex_${fieldIndex}`}
-                                className="w-full"
-                              >
-                                <TextAreaInput
-                                  isEditable={field?.isEditable}
-                                  label={field?.label}
-                                  isRequired={field?.isRequired}
-                                  placeholder={field?.placeholder}
-                                  value={field?.value}
-                                  setValue={field?.setValue}
-                                  hasRequirements={field?.hasRequirements}
-                                  inputType={field?.inputType}
-                                  requirementFunction={
-                                    field?.requirementFunction
-                                  }
-                                  maxCount={field?.maxCount}
-                                />
-                              </div>
-                            ) : field.inputComponent == "NormalInput" ? (
-                              <div
-                                key={`rowIndex_${fieldIndex}`}
-                                className="w-full"
-                              >
-                                <NormalInput
-                                  isEditable={field?.isEditable}
-                                  label={field?.label}
-                                  isRequired={field?.isRequired}
-                                  placeholder={field?.placeholder}
-                                  value={field?.value}
-                                  setValue={field?.setValue}
-                                  hasRequirements={field?.hasRequirements}
-                                  inputType={field?.inputType}
-                                  requirementFunction={
-                                    field?.requirementFunction
-                                  }
-                                  doValidationCheck={field?.doValidationCheck}
-                                  validationCheckWith={
-                                    field?.validationCheckWith
-                                  }
-                                />
-                              </div>
-                            ) : (
-                              <></>
-                            )}
-                          </>
-                        );
-                      })}
-                    </div>
+                    <>
+                      {/* {row[0]?.label == "Extra Details" && (
+                        <div className="w-full flex justify-between items-center text-[14px] mt-[15px] rounded-md min-h-[44px] px-[15px] pr-[8px] bg-[#3e3e3e] border border-[#464646]">
+                          <div>Count this payment in Expense</div>
+                          <div
+                            className={
+                              "w-[40px] h-[28px] rounded-full flex justify-start items-center  " +
+                              (isInward
+                                ? " ml-[15px] bg-[#000000]"
+                                : " bg-[#000000]")
+                            }
+                            style={{ transition: ".3s" }}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setIsInward(!isInward);
+                            }}
+                          >
+                            <div
+                              className={
+                                "h-[22px] w-[22px] rounded-full  " +
+                                (isInward
+                                  ? " ml-[15px] bg-[#87bd12]"
+                                  : " ml-[3px] bg-[#909090]")
+                              }
+                              style={{ transition: ".3s" }}
+                            ></div>
+                          </div>
+                        </div>
+                      )} */}
+                      <div
+                        key={rowIndex}
+                        className="w-full mt-[15px] flex justify-between items-start"
+                      >
+                        {row.map((field, fieldIndex) => {
+                          return (
+                            <>
+                              {field.inputComponent == "TextAreaInput" ? (
+                                <div
+                                  key={`rowIndex_${fieldIndex}`}
+                                  className="w-full"
+                                >
+                                  <TextAreaInput
+                                    isEditable={field?.isEditable}
+                                    label={field?.label}
+                                    isRequired={field?.isRequired}
+                                    placeholder={field?.placeholder}
+                                    value={field?.value}
+                                    setValue={field?.setValue}
+                                    hasRequirements={field?.hasRequirements}
+                                    inputType={field?.inputType}
+                                    requirementFunction={
+                                      field?.requirementFunction
+                                    }
+                                    maxCount={field?.maxCount}
+                                  />
+                                </div>
+                              ) : field.inputComponent == "NormalInput" ? (
+                                <div
+                                  key={`rowIndex_${fieldIndex}`}
+                                  className="w-full"
+                                >
+                                  <NormalInput
+                                    isEditable={field?.isEditable}
+                                    label={field?.label}
+                                    isRequired={field?.isRequired}
+                                    placeholder={field?.placeholder}
+                                    value={field?.value}
+                                    setValue={field?.setValue}
+                                    hasRequirements={field?.hasRequirements}
+                                    inputType={field?.inputType}
+                                    requirementFunction={
+                                      field?.requirementFunction
+                                    }
+                                    doValidationCheck={field?.doValidationCheck}
+                                    validationCheckWith={
+                                      field?.validationCheckWith
+                                    }
+                                  />
+                                </div>
+                              ) : field?.inputComponent == "DropdownInput" ? (
+                                <>
+                                  <div
+                                    key={`rowIndex_${fieldIndex}`}
+                                    className="w-full"
+                                  >
+                                    <DropDownInput
+                                      isEditable={field?.isEditable}
+                                      label={field?.label}
+                                      isRequired={field?.isRequired}
+                                      placeholder={field?.placeholder}
+                                      value={field?.value}
+                                      setValue={field?.setValue}
+                                      // hasRequirements={field?.hasRequirements}
+                                      inputType={field?.inputType}
+                                      showDropdown={showDropdown}
+                                      setShowDropdown={setShowDropdown}
+                                      // requirementFunction={
+                                      //   field?.requirementFunction
+                                      // }
+                                      // doValidationCheck={
+                                      //   field?.doValidationCheck
+                                      // }
+                                      // validationCheckWith={
+                                      //   field?.validationCheckWith
+                                      // }
+                                    />
+                                  </div>
+                                </>
+                              ) : (
+                                <></>
+                              )}
+                            </>
+                          );
+                        })}
+                      </div>
+                      {rowIndex == 0 && (
+                        <div className="w-full flex justify-start items-center flex-wrap mt-[5px]">
+                          <div className="px-[10px] py-[3px] flex justify-center items-center text-[14px] rounded-md mr-[-5px] text-[#696969] mb-[5px] mt-[-10px] ml-[-5px]">
+                            <HugeiconsIcon
+                              icon={ArrowMoveDownRightIcon}
+                              size={20}
+                              strokeWidth={2}
+                              className=""
+                            />
+                          </div>
+                          <div className="p-[1px] flex justify-center items-center text-[14px] bg-gradient-to-br from-[#525252] via-[30%] via-[#383838] to-[#272727] rounded-md mr-[5px] mb-[5px]">
+                            <div
+                              className="px-[10px] py-[3px] flex justify-center items-center text-[14px] bg-[#272727] rounded-[5px] text-[#9b9b9b]"
+                              onClick={(e) => {
+                                setName("TCS - Salary Credited");
+                                setCategory("Salary");
+                                setPaymentType("Online");
+                              }}
+                            >
+                              Salary
+                            </div>
+                          </div>
+
+                          {/* <div
+                            className="px-[10px] py-[3px] flex justify-center items-center text-[14px] bg-[#272727] rounded-md mr-[5px] text-[#d0d0d0] mb-[5px] border border-[#2c2c2c]"
+                            onClick={(e) => {
+                              setName("TCS - Salary Credited");
+                              setCategory("Salary");
+                            }}
+                          >
+                            Salary
+                          </div> */}
+                          <div className="p-[1px] flex justify-center items-center text-[14px] bg-gradient-to-br from-[#525252] via-[30%] via-[#383838] to-[#272727] rounded-md mr-[5px] text-[#d0d0d0] mb-[5px]">
+                            <div
+                              className="px-[10px] py-[3px] flex justify-center items-center text-[14px] bg-[#272727] rounded-[5px] text-[#9b9b9b]"
+                              onClick={(e) => {
+                                setName("TCS - Lunch at Delta Park");
+                                setCategory("Food");
+                                setPaymentType("Online");
+                              }}
+                            >
+                              Lunch
+                            </div>
+                          </div>
+                          {/* <div
+                            className="px-[10px] py-[3px] flex justify-center items-center text-[14px] bg-[#272727] rounded-md mr-[5px] text-[#d0d0d0] mb-[5px] border border-[#2c2c2c]"
+                            onClick={(e) => {
+                              setName("TCS - Lunch at Delta Park");
+                              setCategory("Food");
+                            }}
+                          >
+                            Lunch
+                          </div> */}
+                          <div className="p-[1px] flex justify-center items-center text-[14px] bg-gradient-to-br from-[#525252] via-[30%] via-[#383838] to-[#272727] rounded-md mr-[5px] text-[#d0d0d0] mb-[5px]">
+                            <div
+                              className="px-[10px] py-[3px] flex justify-center items-center text-[14px] bg-[#272727] rounded-[5px] text-[#9b9b9b]"
+                              onClick={(e) => {
+                                setName(
+                                  "UBER - Renewed Shuttle Package (Unlimited)"
+                                );
+                                setCategory("Subscription");
+                                setPaymentType("Online");
+                              }}
+                            >
+                              Shuttle Package
+                            </div>
+                          </div>
+
+                          {/* <div
+                            className="px-[10px] py-[3px] flex justify-center items-center text-[14px] bg-[#272727] rounded-md mr-[5px] text-[#d0d0d0] mb-[5px] border border-[#2c2c2c]"
+                            onClick={(e) => {
+                              setName(
+                                "UBER - Renewed Shuttle Package (Unlimited)"
+                              );
+                              setCategory("Subscription");
+                            }}
+                          >
+                            Shuttle Package
+                          </div> */}
+                          <div className="p-[1px] flex justify-center items-center text-[14px] bg-gradient-to-br from-[#7f2f2f] via-[30%] via-[#4e2828] to-[#3b1f1f] rounded-md mr-[5px] text-[#d0d0d0] mb-[5px]">
+                            <div
+                              className="px-[10px] py-[3px] flex justify-center items-center text-[14px] bg-[#3b1f1f] rounded-[5px] text-[#e24a4a]"
+                              onClick={(e) => {
+                                setName("");
+                                setCategory("");
+                                setPaymentType("");
+                                setAmount("");
+                                setDate("");
+                                setDetail("");
+                              }}
+                            >
+                              <HugeiconsIcon
+                                icon={Add01Icon}
+                                size={14}
+                                strokeWidth={2.5}
+                                className="mr-[6px] rotate-45"
+                              />
+                              Clear
+                            </div>
+                          </div>
+                          <div className="p-[1px] flex justify-center items-center text-[14px] bg-gradient-to-br from-[#525252] via-[30%] via-[#383838] to-[#272727] rounded-md mr-[5px] mb-[5px]">
+                            <div
+                              className="px-[6.5px] py-[6.5px] flex justify-center items-center text-[14px] bg-[#272727] rounded-[5px] text-[#9b9b9b]"
+                              onClick={(e) => {
+                                setName("TCS - Salary Credited");
+                                setCategory("Salary");
+                              }}
+                            >
+                              <HugeiconsIcon
+                                icon={Add01Icon}
+                                size={14}
+                                strokeWidth={2.5}
+                                className="mr-[0px]"
+                              />
+                              {/* Add new */}
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </>
                   )}
                 </>
               );

@@ -40,6 +40,7 @@ import {
   getPeriodWiseComparison,
   getTopCategoryForTheMonth,
   getTotalExpenseForTheMonth,
+  groupAndSortTransactions,
 } from "../../utils/functions";
 import { colorCode, creamyCoolColors, monthName } from "../../utils/constants";
 import TransactionBlock from "../TransactionBlock";
@@ -492,13 +493,18 @@ export default function HomeSection(props) {
         <div className="text-[#595959] font-[im] text-[14px] mb-[10px]">
           Today
         </div>
-        {getExpensesForTheMonth(
+        {/* {getExpensesForTheMonth(
           props?.allTransactions,
           activeMonthIndex,
           activeYear
         )?.map((data, index) => {
           return <TransactionBlock data={data} index={index} />;
-        })}
+        })} */}
+        {groupAndSortTransactions(props?.allTransactions)?.map(
+          (data, index) => {
+            return <TransactionBlock data={data} index={index} />;
+          }
+        )}
       </div>
       <div className=""></div>
     </div>

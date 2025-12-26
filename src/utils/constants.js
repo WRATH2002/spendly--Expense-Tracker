@@ -399,6 +399,14 @@ const temp = [
   },
 ];
 
+const paymentTypeOptions = [
+  { name: "Online" },
+  { name: "Card" },
+  { name: "Cash" },
+];
+
+
+
 export {
   themeColor,
   monthName,
@@ -406,4 +414,5 @@ export {
   colorCode,
   quarterMonth,
   temp,
+  paymentTypeOptions,
 };
