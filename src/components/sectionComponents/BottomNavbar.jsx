@@ -27,15 +27,15 @@ export default function BottomNavbar({
   setAllSpaceInfoTemp,
 }) {
   return (
-    <div className="w-[250px] h-[50px] rounded-full flex flex-col justify-center items-center text-[#858585] bg-[#ffffff2f] z-[60] backdrop-blur-lg ">
-      <div className="w-full h-full flex justify-evenly items-center z-[70]">
+    <div className="w-[250px] h-[50px] rounded-full flex flex-col justify-center items-center text-[#858585] bg-[#8f8f8f2f]  z-[60] backdrop-blur-lg ">
+      <div className="w-full h-full flex justify-evenly items-center border border-[#8f8f8f18] rounded-full z-[70]">
         <HugeiconsIcon
           icon={Home02Icon}
           size={20}
           strokeWidth={2.2}
           className={
             "active:text-[#ffffff] ml-[-10px] " +
-            (activeSection == "home" ? " text-[#ffffff]" : " text-[#858585]")
+            (activeSection == "home" ? " text-[#ffffff]" : " text-[#bcbcbc]")
           }
           onClick={() => {
             if (activeSection !== "home") {
@@ -50,7 +50,7 @@ export default function BottomNavbar({
           strokeWidth={2.2}
           className={
             "active:text-[#ffffff]  " +
-            (activeSection == "chart" ? " text-[#ffffff]" : " text-[#858585]")
+            (activeSection == "chart" ? " text-[#ffffff]" : " text-[#bcbcbc]")
           }
           onClick={() => {
             if (activeSection !== "chart") {
@@ -65,7 +65,7 @@ export default function BottomNavbar({
           strokeWidth={2.2}
           className={
             "active:text-[#ffffff]  " +
-            (activeSection == "addNew" ? " text-[#ffffff]" : " text-[#858585]")
+            (activeSection == "addNew" ? " text-[#ffffff]" : " text-[#bcbcbc]")
           }
           onClick={() => {
             //   if (activeSection !== "addNew") {
@@ -81,7 +81,7 @@ export default function BottomNavbar({
           strokeWidth={2.2}
           className={
             "active:text-[#ffffff]  " +
-            (activeSection == "split" ? " text-[#ffffff]" : " text-[#858585]")
+            (activeSection == "split" ? " text-[#ffffff]" : " text-[#bcbcbc]")
           }
           onClick={() => {
             if (activeSection !== "split") {
@@ -97,7 +97,7 @@ export default function BottomNavbar({
             "active:text-[#ffffff] mr-[-10px] " +
             (activeSection == "settings"
               ? " text-[#ffffff]"
-              : " text-[#858585]")
+              : " text-[#bcbcbc]")
           }
           onClick={() => {
             if (activeSection !== "settings") {
@@ -107,10 +107,10 @@ export default function BottomNavbar({
           }}
         />
       </div>
-      <div className="w-full h-full flex justify-start items-center mt-[-50px] py-[5px] px-[5px] ">
+      <div className="w-full h-full flex justify-start items-center border border-[#8f8f8f00] rounded-full mt-[-50px] py-[5px] px-[5px] ">
         <div
           className={
-            "h-full w-[calc(100%/5)] bg-[#ffffff2f] rounded-full " +
+            "h-full w-[calc(100%/5)] bg-[#ffffff2f] rounded-full border border-[#ffffff12] " +
             (activeSection == "home"
               ? " ml-[calc((100%/5)*0)]"
               : activeSection == "chart"

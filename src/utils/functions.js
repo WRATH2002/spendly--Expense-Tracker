@@ -713,6 +713,211 @@ function formatTransactionDate(isoString) {
   return `${day}${getOrdinalSuffix(day)} ${month}, ${year}`;
 }
 
+function getBankWiseInfo(allTransactionDetailArray, startDate, endDate) {
+  console.log(allTransactionDetailArray);
+  function getData(startDate, endDate) {
+    let allBanksWithInfo = {};
+    allTransactionDetailArray?.forEach((data, index) => {
+      if (!data?.isGroup) {
+        if (
+          !allBanksWithInfo[data?.from] &&
+          data?.from?.length > 0 &&
+          startDate <= data?.transactionDate &&
+          data?.transactionDate <= endDate
+        ) {
+          allBanksWithInfo[data?.from] = {
+            bankCode: data?.from,
+            bankName: "",
+            totalInward: 0,
+            totalOutward: Number(
+              parseFloat(data?.transactionAmount)?.toFixed(2)
+            ),
+            totalTransactions: 1,
+          };
+        } else if (
+          allBanksWithInfo[data?.from] &&
+          startDate <= data?.transactionDate &&
+          data?.transactionDate <= endDate
+        ) {
+          allBanksWithInfo[data?.from] = {
+            bankCode: allBanksWithInfo[data?.from]?.bankCode,
+            bankName: allBanksWithInfo[data?.from]?.bankName,
+            totalInward: allBanksWithInfo[data?.from]?.totalInward,
+            totalOutward: Number(
+              (
+                allBanksWithInfo[data?.from]?.totalOutward +
+                parseFloat(data?.transactionAmount)
+              )?.toFixed(2)
+            ),
+            totalTransactions:
+              allBanksWithInfo[data?.from]?.totalTransactions + 1,
+          };
+        }
+
+        if (
+          !allBanksWithInfo[data?.to] &&
+          data?.to?.length > 0 &&
+          startDate <= data?.transactionDate &&
+          data?.transactionDate <= endDate
+        ) {
+          allBanksWithInfo[data?.to] = {
+            bankCode: data?.to,
+            bankName: "",
+            totalInward: Number(
+              parseFloat(data?.transactionAmount)?.toFixed(2)
+            ),
+            totalOutward: 0,
+            totalTransactions: 1,
+          };
+        } else if (
+          allBanksWithInfo[data?.to] &&
+          startDate <= data?.transactionDate &&
+          data?.transactionDate <= endDate
+        ) {
+          allBanksWithInfo[data?.to] = {
+            bankCode: allBanksWithInfo[data?.to]?.bankCode,
+            bankName: allBanksWithInfo[data?.to]?.bankName,
+            totalInward: Number(
+              (
+                allBanksWithInfo[data?.to]?.totalInward +
+                parseFloat(data.transactionAmount)
+              )?.toFixed(2)
+            ),
+            totalOutward: allBanksWithInfo[data?.to]?.totalOutward,
+            totalTransactions:
+              allBanksWithInfo[data?.to]?.totalTransactions + 1,
+          };
+        }
+      }
+    });
+    console.clear();
+    console.log("", allBanksWithInfo);
+
+    let objToArr = [];
+
+    Object.entries(allBanksWithInfo).forEach(([key, value]) => {
+      console.log("key:", key, "value:", value);
+      objToArr.push(value);
+    });
+
+    return objToArr;
+  }
+
+  if (startDate?.length == 0 && endDate?.length == 0) {
+    return getData(
+      new Date("2010-01-01").toISOString(),
+      new Date().toISOString()
+    );
+  } else if (startDate?.length == 0 && endDate?.length > 0) {
+    return getData(new Date(startDate).toISOString(), new Date().toISOString());
+  } else if (startDate?.length > 0 && endDate?.length == 0) {
+    return getData(
+      new Date("2010-01-01").toISOString(),
+      new Date(endDate).toISOString()
+    );
+  } else if (startDate?.length > 0 && endDate?.length > 0) {
+    return getData(
+      new Date(startDate).toISOString(),
+      new Date(endDate).toISOString()
+    );
+  }
+}
+
+function getThisMonthExpense(allTransactionList, activeBankCode) {
+  let totalSpentThisMonth = 0;
+  let totalSpentLastMonth = 0;
+
+  allTransactionList?.forEach((data, index) => {
+    if (!data?.isGroup) {
+      // ---------------
+      if (
+        data?.transactionDate?.split("-")[0] == new Date().getFullYear() &&
+        data?.transactionDate?.split("-")[1] == new Date().getMonth() + 1 &&
+        data?.from == activeBankCode &&
+        data?.to == ""
+      ) {
+        totalSpentThisMonth += Number(
+          parseFloat(data?.transactionAmount)?.toFixed(2)
+        );
+      } else if (
+        data?.transactionDate?.split("-")[0] == new Date().getFullYear() &&
+        data?.transactionDate?.split("-")[1] == new Date().getMonth() + 1 &&
+        data?.from == activeBankCode &&
+        data?.to == ""
+      ) {
+        totalSpentThisMonth += Number(
+          parseFloat(data?.transactionAmount)?.toFixed(2)
+        );
+      }
+      // ---------------
+      if (data?.transactionDate?.split("-")[1] == 1) {
+        if (
+          data?.transactionDate?.split("-")[0] ==
+            new Date().getFullYear() - 1 &&
+          data?.transactionDate?.split(" ")[1] == 12 &&
+          data?.from == activeBankCode
+        ) {
+          totalSpentLastMonth += Number(
+            parseFloat(data?.transactionAmount)?.toFixed(2)
+          );
+        }
+      } else {
+        if (
+          data?.transactionDate?.split("-")[0] == new Date().getFullYear() &&
+          data?.transactionDate?.split("-")[1] == new Date().getMonth() - 2 &&
+          data?.from == activeBankCode
+        ) {
+          totalSpentLastMonth += Number(
+            parseFloat(data?.transactionAmount)?.toFixed(2)
+          );
+        }
+      }
+    }
+  });
+
+  let percentage = 0;
+
+  if (totalSpentThisMonth > totalSpentLastMonth) {
+    percentage = (
+      ((totalSpentThisMonth - totalSpentLastMonth) / totalSpentLastMonth) *
+      100
+    ).toFixed(2);
+    return {
+      thisMonth: totalSpentThisMonth,
+      prevMonth: totalSpentLastMonth,
+      conclusion: `${percentage}% upper than last month`,
+      isMore: true,
+      isSame: false,
+    };
+  } else if (totalSpentThisMonth < totalSpentLastMonth) {
+    percentage = (
+      ((totalSpentLastMonth - totalSpentThisMonth) / totalSpentLastMonth) *
+      100
+    ).toFixed(2);
+    return {
+      thisMonth: totalSpentThisMonth,
+      prevMonth: totalSpentLastMonth,
+      conclusion: `${Math.round(percentage)}% lower than last month`,
+      isMore: false,
+      isSame: false,
+    };
+  } else if (totalSpentLastMonth == totalSpentThisMonth) {
+    return {
+      thisMonth: totalSpentThisMonth,
+      prevMonth: totalSpentLastMonth,
+      conclusion: "Same as last month",
+      isSame: true,
+    };
+  }
+}
+
+function formatAmount(amount) {
+  return new Intl.NumberFormat("en-IN", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(amount);
+}
+
 export {
   changeMonthIndex,
   getCurrentDateTime,
@@ -730,4 +935,7 @@ export {
   containInCharacterCount,
   groupAndSortTransactions,
   formatTransactionDate,
+  getBankWiseInfo,
+  getThisMonthExpense,
+  formatAmount,
 };

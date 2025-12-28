@@ -7,6 +7,7 @@ import {
   Calendar01Icon,
   Calendar03Icon,
   Calendar04Icon,
+  CircleIcon,
   FilterVerticalIcon,
   TradeDownIcon,
   TradeUpIcon,
@@ -17,11 +18,15 @@ import CountUp from "../animations/CountUp";
 import { colorCode, monthName } from "../../utils/constants";
 import {
   changeMonthIndex,
+  formatAmount,
+  getBankWiseInfo,
   getCategoryWiseCountWithInfoForTheMonth,
   getData,
   getMonthYearDetails,
   getPeriodWiseComparison,
+  getThisMonthExpense,
   getTotalExpenseForTheMonth,
+  groupAndSortTransactions,
 } from "../../utils/functions";
 import { hover } from "framer-motion";
 import { AnimatedNumber } from "../animations/AnimatedNumber";
@@ -62,7 +67,7 @@ const sampleTransactions = [
   },
 ];
 
-export default function ChartSection(props) {
+export default function ChartSection({ allTransactions, allBanksInfo }) {
   const [activeQuarterly, setActiveQuarterly] = useState({
     monthsIndex: getData(new Date().getMonth())?.monthsIndex, // as index number, need to add +1 for actual month number
     showRender: `${
@@ -93,23 +98,23 @@ export default function ChartSection(props) {
   const [currDataInfo, setCurrDataInfo] = useState({});
   const [prevDataInfo, setPrevDataInfo] = useState({});
 
-  useEffect(() => {
-    const tempData = getPeriodWiseComparison(
-      props?.allTransactions,
-      activeSearch,
-      activeMonthly,
-      activeQuarterly,
-      activeYearly
-    );
-    setCurrDataInfo(tempData[0]);
-    setPrevDataInfo(tempData[1]);
-  }, [
-    props?.allTransactions,
-    activeSearch,
-    activeMonthly,
-    activeYearly,
-    activeQuarterly,
-  ]);
+  // useEffect(() => {
+  //   const tempData = getPeriodWiseComparison(
+  //     props?.allTransactions,
+  //     activeSearch,
+  //     activeMonthly,
+  //     activeQuarterly,
+  //     activeYearly
+  //   );
+  //   setCurrDataInfo(tempData[0]);
+  //   setPrevDataInfo(tempData[1]);
+  // }, [
+  //   props?.allTransactions,
+  //   activeSearch,
+  //   activeMonthly,
+  //   activeYearly,
+  //   activeQuarterly,
+  // ]);
 
   function getColor(value) {
     if (value < 40) return "#7ED957"; // green color -> creamy
@@ -119,421 +124,232 @@ export default function ChartSection(props) {
     } // green
   }
 
+  function getQuickInfoForBank(bankCode) {}
+
+  function getBankFullDetailsWithInfo(transactions, bankFullInfoWithDetails) {
+    let bankDataArr = bankFullInfoWithDetails?.bankDataArr;
+    let bankDataObj = bankFullInfoWithDetails?.bankDataObj;
+    let activeBankCode = bankFullInfoWithDetails?.activeBankCode;
+
+    // let tempStructure = [
+    //   {
+    //     bankInfo: {
+    //       bankName: "",
+    //       bankCode: "",
+    //       isActive: false,
+    //       isPrimary: false,
+    //     },
+    //     quickInfo: {
+    //       thisMonthExpense: 0,
+    //       prevMonthExpense: 0,
+    //       conclusion: "",
+    //     },
+    //     fullInfo: {
+    //       totalIncome: 0,
+    //       totalExpense: 0,
+    //       totalExpenseExceptInternalTransfer: 0,
+    //       totalInternalTransfer: 0,
+    //       internalTransferMap: [
+    //         {
+    //           toBankName: "",
+    //           toBankCode: "",
+    //           totalTransfered: 0,
+    //           totalRecieved: 0,
+    //         },
+    //       ],
+    //     },
+    //     thisMonthInfo: {
+    //       totalIncome: 0,
+    //       totalExpense: 0,
+    //       totalExpenseExceptInternalTransfer: 0,
+    //       totalInternalTransfer: 0,
+    //       internalTransferMap: [
+    //         {
+    //           toBankName: "",
+    //           toBankCode: "",
+    //           totalTransfered: 0,
+    //           totalRecieved: 0,
+    //         },
+    //       ],
+    //     },
+    //     prevMonthInfo: {
+    //       totalIncome: 0,
+    //       totalExpense: 0,
+    //       totalExpenseExceptInternalTransfer: 0,
+    //       totalInternalTransfer: 0,
+    //       internalTransferMap: [
+    //         {
+    //           toBankName: "",
+    //           toBankCode: "",
+    //           totalTransfered: 0,
+    //           totalRecieved: 0,
+    //         },
+    //       ],
+    //     },
+    //   },
+    // ];
+
+    let banksInsertedArr = {};
+    let bankInfoObjArr = [];
+    let bankInfoObj = {
+      // ---- this part done
+      bankName: "",
+      bankCode: "",
+      isActive: false,
+      isPrimary: false,
+    };
+
+    bankDataArr?.forEach((data) => {
+      bankInfoObj = {
+        bankName: data?.bankName,
+        bankCode: data?.code,
+        isActive: !data?.deleteFlag,
+        isPrimary: activeBankCode == data?.code,
+      };
+      bankInfoObjArr?.push({ bankInfo: bankInfoObj });
+      banksInsertedArr[data?.code] = {
+        index: bankInfoObjArr?.length,
+      };
+    });
+    // console.log(banksInsertedArr, bankInfoObjArr);
+
+    // let bankQuickInfoObjArr = [];
+    let bankQuickInfoObj = {
+      thisMonthExpense: 0,
+      prevMonthExpense: 0,
+      conclusion: "",
+    };
+
+    console.log("BANK001", getThisMonthExpense(transactions, "BANK003"));
+    // let bankFullInfoWithDetailObjArr = [];
+    let bankFullInfoWithDetailObj = {
+      totalIncome: 0,
+      totalExpense: 0,
+      totalExpenseExceptInternalTransfer: 0,
+      totalInternalTransfer: 0,
+      internalTransferMap: [],
+    };
+    let internalTransferMapObjArr = [];
+    let internalTransferMapObjj = {
+      toBankName: "",
+      toBankCode: "",
+      totalTransfered: 0,
+      totalRecieved: 0,
+    };
+  }
+
   return (
-    <div className="w-full h-full flex flex-col justify-start items-center overflow-y-scroll bg-[#000000] p-[15px] text-[#D4D4D4] ">
-      <div className="w-full flex flex-col justify-start items-start p-[10px]">
-        {/* <div className="font-[ib] text-[24px]">Budget Info</div> */}
-        <div className="w-full flex justify-between items-center mt-[0px] font-[tnr]  text-[16px] ">
-          <div className="bg-[#151416] rounded-[10px] p-[2px] flex flex-col justify-start items-start ">
-            <div className="flex justify-start items-center">
-              {options?.map((data, index) => {
-                return (
-                  <div
-                    key={index}
-                    className={
-                      "w-[80px] h-[30px] rounded-[8px] flex justify-center items-center z-[1]" +
-                      (activeSearch == data
-                        ? " text-[#D4D4D4]"
-                        : " text-[#797979]")
-                    }
-                    onClick={() => {
-                      setActiveSearch(data);
-                    }}
-                  >
-                    {data}
-                  </div>
-                );
-              })}
+    <>
+      <div class="absolute inset-0 noise pointer-events-none"></div>
+      <div className="grad rounded-t-full blur-[200px] w-full h-[200px] fixed left-0 bottom-[0px] -z-[0]"></div>
+      <div className="w-full h-full flex flex-col justify-start items-center overflow-y-scroll bg-[#00000000] p-[15px] text-[#D4D4D4] font-[geist] z-0 ">
+        <div className="w-full flex flex-col justify-start items-start p-[10px]">
+          <div className="w-full flex flex-col justify-start items-start bg-[#ffffff12] rounded-xl p-[15px] px-[20px] font-[geist]">
+            <div className="w-full flex justify-between items-center text-[14px] text-[#606060]">
+              <div className="font-[600]">Your Banks</div>
+              <div>See All</div>
             </div>
-            <div className="flex justify-start items-center mt-[-30px]">
-              <div
-                className={
-                  "w-[80px] h-[30px] rounded-[8px] flex justify-center items-center bg-[#29292c]" +
-                  (activeSearch == "Monthly"
-                    ? " ml-[0px]"
-                    : activeSearch == "Quarterly"
-                    ? " ml-[80px]"
-                    : " ml-[160px]")
-                }
-                style={{ transition: ".3s" }}
-              ></div>
-            </div>
-          </div>
-          <div className="flex justify-center items-center bg-[#151416] active:bg-[#29292c] border-[1px] border-[#1d1b1e] h-[34px] px-[10px] rounded-[10px]">
-            <HugeiconsIcon
-              icon={FilterVerticalIcon}
-              size={16}
-              strokeWidth={2}
-              className="mr-[6px]"
-            />
-            Filter
-          </div>
-        </div>
-        {/* ---- Month, year, quarter navigation */}
-        <div className="flex justify-between items-center font-[ir] mb-[20px] mt-[30px] ">
-          <div className="text-[#797979] text-[16px] flex justify-start items-center ">
-            <div
-              className="w-[20px] h-[20px] flex justify-center items-center rounded-lg border-[1.5px] border-[#2c2b2e] mr-[10px] active:bg-[#28272A] active:text-[white] cursor-pointer"
-              onClick={() => {
-                changeMonthIndex(
-                  "previous",
-                  activeMonthIndex,
-                  activeYear,
-                  setActiveMonthIndex,
-                  setActiveYear
-                );
-                getMonthYearDetails(
-                  activeSearch, // option means `Monthly` or `Quarterly` or `Yearly`
-                  setActiveSearch, // function to change the data
-                  "previous", // like it will go up or down; possible values , `Next` or `Previous`
-                  activeMonthly,
-                  setActiveMonthly,
-                  activeQuarterly,
-                  setActiveQuarterly,
-                  activeYearly,
-                  setActiveYearly
-                );
-              }}
-            >
-              <HugeiconsIcon
-                icon={ArrowLeft01Icon}
-                size={14}
-                strokeWidth={2.5}
-                className=""
-              />
-            </div>
-            {/* <span className="mr-[5px] text-[#D4D4D4] font-[isb]">
-              {monthName[activeMonthIndex]?.short},
-            </span>
-            {activeYear} */}
-            <div className="font-[gmm] text-[14px] flex justify-center items-center mt-[1px]">
-              <HugeiconsIcon
-                icon={Calendar04Icon}
-                size={14}
-                strokeWidth={2.2}
-                className="mr-[5px] mb-[2px]"
-              />
-              {activeSearch == "Monthly" ? (
-                <>{activeMonthly?.showRender}</>
-              ) : activeSearch == "Quarterly" ? (
-                <>{activeQuarterly?.showRender}</>
-              ) : (
-                <>{activeYearly?.showRender}</>
-              )}
-            </div>
-            <div
-              className={
-                "w-[20px] h-[20px] justify-center items-center rounded-lg border-[1.5px] border-[#2c2b2e] ml-[10px] active:bg-[#28272A] active:text-[white] cursor-pointer" +
-                (activeMonthIndex === parseInt(new Date().getMonth()) &&
-                activeYear === parseInt(new Date().getFullYear())
-                  ? " hidden"
-                  : " flex")
-              }
-              onClick={() => {
-                changeMonthIndex(
-                  "next",
-                  activeMonthIndex,
-                  activeYear,
-                  setActiveMonthIndex,
-                  setActiveYear
-                );
-                getMonthYearDetails(
-                  activeSearch, // option means `Monthly` or `Quarterly` or `Yearly`
-                  setActiveSearch, // function to change the data
-                  "next", // like it will go up or down; possible values , `Next` or `Previous`
-                  activeMonthly,
-                  setActiveMonthly,
-                  activeQuarterly,
-                  setActiveQuarterly,
-                  activeYearly,
-                  setActiveYearly
-                );
-              }}
-            >
-              <HugeiconsIcon
-                icon={ArrowRight01Icon}
-                size={14}
-                strokeWidth={2.5}
-                className=""
-              />
-            </div>
-          </div>
-        </div>
-        {/* <div className="my-[100px] flex flex-col justify-start items-start">
-          <div>{activeMonthly?.showRender}</div>
-          <div>{activeQuarterly?.showRender}</div>
-          <div>{activeYearly?.showRender}</div>
-        </div> */}
-        {/* ---- Expense and budget info */}
-        <div className="w-full flex justify-between items-center">
-          <div className="flex flex-col justify-start items-start">
-            <div className="text-[#D4D4D4] text-[28px] font-[tnb] flex justify-start items-center ">
-              <span className="mr-[10px] text-[24px] mt-[2.5px] font-[tnh]">
-                ₹
-              </span>
-              <CountUp
-                from={0}
-                to={
-                  Object.keys(currDataInfo).length > 0
-                    ? (currDataInfo?.totalExpense).toString()
-                    : 0
-                }
-                decimals={2}
-                separator=","
-                direction="up"
-                duration={0.2}
-                className="count-up-text  "
-              />
+            <div className="w-full border-t border-[#202020] my-[15px]"></div>
 
-              {/* {currDataInfo?.totalExpense} */}
-              <div className="mx-[10px]">/</div>
-              <div className="flex flex-col justify-center items-start">
-                <div className="w-full h-[3px] rounded-full bg-[#28272A] flex justify-start items-center overflow-hidden mb-[2px] mt-[3px]">
-                  <div
-                    className=" h-full bg-[#7ED957] rounded-r-sm"
-                    style={{
-                      width: `${Math.round(
-                        (currDataInfo?.totalExpense / 60000) * 100
-                      )}%`,
-                      backgroundColor: `${getColor(
-                        Math.round((currDataInfo?.totalExpense / 60000) * 100)
-                      )}`,
-                      transition: ".3s",
-                    }}
-                  ></div>
-                </div>
-                <div className="text-[14px] text-[#797979]">60000</div>
-              </div>
-            </div>
-            <div className="font-[tnm]  text-[16px] flex justify-start items-center">
-              {prevDataInfo?.totalExpense - currDataInfo?.totalExpense > 0 ? (
-                <div className="flex justify-start items-center text-[#7ED957]">
-                  <HugeiconsIcon
-                    icon={TradeDownIcon}
-                    size={16}
-                    strokeWidth={1.6}
-                    className="mr-[3px]"
-                  />{" "}
-                  {prevDataInfo?.totalExpense == 0 ? (
-                    <>
-                      {(
-                        ((prevDataInfo?.totalExpense -
-                          currDataInfo?.totalExpense) /
-                          1) *
-                        100
-                      ).toFixed(1)}
-                      %
-                    </>
-                  ) : (
-                    <>
-                      {(
-                        ((prevDataInfo?.totalExpense -
-                          currDataInfo?.totalExpense) /
-                          prevDataInfo?.totalExpense) *
-                        100
-                      ).toFixed(1)}
-                      % less expense
-                    </>
-                  )}
-                </div>
-              ) : (
+            {getBankWiseInfo(
+              groupAndSortTransactions(allTransactions),
+              "",
+              ""
+            )?.map((data, index) => {
+              return (
                 <>
-                  {prevDataInfo?.totalExpense == 0 ? (
-                    <div className="flex justify-start items-center text-[#f9a238]">
-                      <HugeiconsIcon
-                        icon={Alert01Icon}
-                        size={16}
-                        strokeWidth={1.6}
-                        className="mr-[7px]"
-                      />{" "}
-                      No previous data
-                    </div>
-                  ) : (
-                    <div className="flex justify-start items-center text-[#FF6F6F]">
-                      <HugeiconsIcon
-                        icon={TradeUpIcon}
-                        size={16}
-                        strokeWidth={1.6}
-                        className="mr-[7px]"
-                      />{" "}
-                      {(
-                        ((currDataInfo?.totalExpense -
-                          prevDataInfo?.totalExpense) /
-                          prevDataInfo?.totalExpense) *
-                        100
-                      ).toFixed(1)}
-                      % more expense
-                    </div>
-                  )}
-                </>
-              )}
-            </div>
-          </div>
-        </div>
-        {/* ---- Category wise distribution in progress bar style */}
-        <div className="w-full flex justify-start items-center mt-[20px] h-[6px]">
-          {Object?.keys(currDataInfo).length > 0 ? (
-            <>
-              {Object.entries(currDataInfo?.expenseDistribution[0])?.map(
-                ([key, value], index, arr) => {
-                  return (
-                    <>
+                  <div
+                    className={
+                      "w-full border-t border-[#202020] my-[15px]" +
+                      (index != 0 ? " visible" : " hidden")
+                    }
+                  ></div>
+                  <div
+                    className="w-full flex justify-start items-start"
+                    key={index}
+                  >
+                    <div></div>
+                    <div className="w-full flex flex-col justify-start items-start ">
+                      <div className="font-[600]">
+                        {allBanksInfo?.bankDataObj[data?.bankCode]?.bankName}
+                      </div>
+                      <div className="text-[10px] text-[#676767] mt-[5px]">
+                        This month expense
+                      </div>
+                      <div className="w-full flex justify-start items-center text-[12px] text-[#7e7e7e] font-[600] ">
+                        <span className="mr-[5px]">₹</span>
+                        {formatAmount(data?.totalOutward)}
+                      </div>
                       <div
-                        key={index + "01"}
                         className={
-                          "min-w-[2px] h-full" +
-                          (index > 0 ? " flex" : " hidden")
+                          "px-[6px] py-[1px] rounded-md bg-[#69e90013] border border-[#69e90006] text-[#5ddd02c5] text-[10px] mt-[10px] flex justify-center items-center" +
+                          (allBanksInfo?.activeBankCode == data?.bankCode
+                            ? " visible"
+                            : " hidden")
                         }
-                        style={{ transition: ".3s" }}
-                      ></div>
-
-                      <div
-                        onMouseEnter={() => {
-                          setHoveredCategory(value?.categoryName);
-                        }}
-                        onMouseLeave={() => {
-                          setHoveredCategory("");
-                        }}
-                        key={index + "02"}
-                        className={
-                          " h-full flex justify-center items-center  " +
-                          (index == 0
-                            ? " rounded-l-[4px] rounded-r-[2px]"
-                            : index == arr?.length - 1
-                            ? " rounded-r-[4px] rounded-l-[2px]"
-                            : " rounded-[2px]")
-                        }
-                        style={{
-                          width: `${value?.categoryPercentage}%`,
-                          transition: ".3s",
-                        }}
                       >
-                        <div
-                          key={index + "02"}
-                          className={
-                            " h-full w-full" +
-                            (index == 0
-                              ? " rounded-l-[4px] rounded-r-[2px]"
-                              : index == arr?.length - 1
-                              ? " rounded-r-[4px] rounded-l-[2px]"
-                              : " rounded-[2px]")
-                          }
-                          style={{
-                            backgroundColor:
-                              hoveredCategory === value?.categoryName
-                                ? `${colorCode[index]?.primary}`
-                                : hoveredCategory.length > 0
-                                ? `${colorCode[index]?.secondary}`
-                                : `${colorCode[index]?.primary}`,
-                            transition: ".3s",
-                          }}
-                        ></div>
-                      </div>
-                    </>
-                  );
-                }
-              )}
-            </>
-          ) : (
-            <></>
-          )}
-        </div>
-        {/* ---- Color wise category name show */}
-        <div className="w-full flex flex-wrap justify-start items-start mt-[30px]  ">
-          {Object?.keys(currDataInfo).length > 0 ? (
-            <>
-              {Object.entries(currDataInfo?.expenseDistribution[0])?.map(
-                ([key, value], index, arr) => {
-                  return (
-                    <div
-                      onMouseEnter={() => {
-                        setHoveredCategory(value?.categoryName);
-                      }}
-                      onMouseLeave={() => {
-                        setHoveredCategory("");
-                      }}
-                      key={index}
-                      className={
-                        ` flex justify-between select-none items-center h-[20px] w-[50%]  pl-[6px] rounded-l-full bg-gradient-to-r from-[${colorCode[index]?.secondary}] to-transparent` +
-                        (index > 1 ? " mt-[10px]" : " mt-[0px]") +
-                        (hoveredCategory === value?.categoryName
-                          ? " text-[#D4D4D4] opacity-100 "
-                          : hoveredCategory.length > 0
-                          ? " text-[#D4D4D4] opacity-30"
-                          : " text-[#D4D4D4] opacity-100")
-                      }
-                      style={{
-                        transition: ".15s",
-                        background:
-                          hoveredCategory === value?.categoryName
-                            ? `linear-gradient(270deg, transparent 50%, ${colorCode[index]?.secondary} 100%)`
-                            : "transparent",
-                      }}
-                    >
-                      <div className="flex justify-start items-center">
-                        <div
-                          className="w-[8px] aspect-square rounded-full mr-[10px]"
-                          style={{
-                            backgroundColor:
-                              hoveredCategory === value?.categoryName
-                                ? `${colorCode[index]?.primary}`
-                                : hoveredCategory.length > 0
-                                ? `${colorCode[index]?.secondary}`
-                                : `${colorCode[index]?.primary}`,
-                            transition: ".15s",
-                          }}
-                        ></div>
-                        <div className="font-[tnr] text-[18px]" style={{}}>
-                          {value?.categoryName?.charAt(0)?.toUpperCase() +
-                            value?.categoryName?.slice(1)}
-                        </div>
-                        <HugeiconsIcon
-                          icon={ArrowRight04Icon}
-                          size={12}
-                          strokeWidth={2}
+                        {/* <HugeiconsIcon
+                          icon={CircleIcon}
+                          size={5}
+                          strokeWidth={1}
                           fill="currentColor"
-                          className={
-                            "mx-[6px]" +
-                            (hoveredCategory == value?.categoryName
-                              ? " opacity-100"
-                              : " opacity-0")
-                          }
-                          style={{
-                            transition: ".3s",
-                            color: `${colorCode[index]?.primary}`,
-                          }}
-                        />
-                        <div
-                          className={
-                            "font-[ib] text-[10px] bg-[#45454500] py-[2px] rounded-md flex justify-start items-center" +
-                            (hoveredCategory == value?.categoryName
-                              ? " opacity-100"
-                              : " opacity-0")
-                          }
-                          style={{
-                            transition: ".3s",
-                            color: `${colorCode[index]?.primary}`,
-                          }}
-                        >
-                          {Math?.round(value?.categoryPercentage)}%
-                        </div>
+                          className="mr-[5px]"
+                        />{" "} */}
+                        <span class="relative flex h-[5px] w-[5px] mr-[5px]">
+                          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#5ddd02c5] opacity-75"></span>
+                          <span class="relative inline-flex rounded-full h-[5px] w-[5px] bg-[#5ddd02c5]"></span>
+                        </span>
+                        Primary
                       </div>
                     </div>
-                  );
-                }
-              )}
-            </>
-          ) : (
-            <></>
-          )}
+                    <div></div>
+                  </div>
+                </>
+              );
+            })}
+            {getBankFullDetailsWithInfo(
+              getBankFullDetailsWithInfo(allTransactions),
+              allBanksInfo
+            )}
+            {/* <div className="w-full flex justify-start items-start">
+              <div></div>
+              <div className="w-full flex flex-col justify-start items-start ">
+                <div className="font-[600]">HDFC Bank</div>
+                <div className="text-[10px] text-[#676767] mt-[5px]">
+                  This month expense
+                </div>
+                <div className="w-full flex justify-start items-center text-[12px] text-[#7e7e7e] font-[600] ">
+                  <span className="mr-[5px]">₹</span>38,435.56
+                </div>
+                <div className="px-[8px] py-[2px] rounded-lg bg-[#69e9001f] border border-[#69e90011] text-[#5ddd02c5] text-[10px] mt-[10px]">
+                  Primary
+                </div>
+              </div>
+              <div></div>
+            </div>
+            <div className="w-full border-t border-[#202020] my-[15px]"></div>
+            <div className="w-full flex justify-start items-start">
+              <div></div>
+              <div className="w-full flex flex-col justify-start items-start ">
+                <div className="font-[600]">KOTAK MAHINDRA Bank</div>
+                <div className="text-[10px] text-[#676767] mt-[5px]">
+                  This month expense
+                </div>
+                <div className="w-full flex justify-start items-center text-[12px] text-[#7e7e7e] font-[600] ">
+                  <span className="mr-[5px]">₹</span>12,395.56
+                </div>
+               
+              </div>
+              <div></div>
+            </div> */}
+          </div>
+
+          {/* <TransactionChart transactions={sampleTransactions} /> */}
+
+          {/* <div className="w-[calc(100%+50px)] ml-[-25px] flex justify-between items-center font-[im] h-[40px] my-[20px] text-[14px] bg-[repeating-linear-gradient(-45deg,#202020_0_1px,transparent_2px_5px)]"></div> */}
         </div>
-
-        {/* <TransactionChart transactions={sampleTransactions} /> */}
-
-        {/* <div className="w-[calc(100%+50px)] ml-[-25px] flex justify-between items-center font-[im] h-[40px] my-[20px] text-[14px] bg-[repeating-linear-gradient(-45deg,#202020_0_1px,transparent_2px_5px)]"></div> */}
-      </div>
-      {/* <div className="w-full flex flex-col justify-center items-center font-[ieb] text-[30px] bg-[#1C1C1E] rounded-3xl p-[25px] mb-[10px]"></div> */}
-      {/* <div className="w-full flex flex-col justify-center items-center font-[ieb] text-[30px] bg-[#1C1C1E] rounded-3xl p-[25px] mb-[10px] mt-[50px]">
+        {/* <div className="w-full flex flex-col justify-center items-center font-[ieb] text-[30px] bg-[#1C1C1E] rounded-3xl p-[25px] mb-[10px]"></div> */}
+        {/* <div className="w-full flex flex-col justify-center items-center font-[ieb] text-[30px] bg-[#1C1C1E] rounded-3xl p-[25px] mb-[10px] mt-[50px]">
         <div className="w-full flex flex-col justify-start items-start">
           <div className="flex justify-between items-center font-[ir] mb-[20px]">
             <div className="text-[#797979] text-[16px] flex justify-start items-center ">
@@ -778,6 +594,7 @@ export default function ChartSection(props) {
           </div>
         </div>
       </div> */}
-    </div>
+      </div>
+    </>
   );
 }

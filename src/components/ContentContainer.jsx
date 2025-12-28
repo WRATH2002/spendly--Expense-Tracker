@@ -114,6 +114,7 @@ export default function ContentContainer(props) {
   const [allSpaceArray, setAllSpaceArray] = useState([]); // for checking space name availability
   const [allSpaceInfo, setAllSpaceInfo] = useState([]); // to render spaces
   const [allSpaceInfoTemp, setAllSpaceInfoTemp] = useState([]); // to render spaces
+  const [allBanksInfo, setAllBanksInfo] = useState({});
 
   useEffect(() => {
     const authUserLoginState = onAuthStateChanged(auth, (user) => {
@@ -154,6 +155,32 @@ export default function ContentContainer(props) {
       console.table("setAllSpaceArray", snapshot?.data()?.AllSplitSpaceName);
       console.table(snapshot?.data());
       setAllSpaceArray(snapshot?.data()?.AllSplitSpaceName);
+    });
+
+    const banksRef = db
+      .collection("userSpace")
+      .doc(user?.uid)
+      ?.collection("AllTransactionsSpace")
+      .doc("Banks");
+
+    onSnapshot(banksRef, (snapshot) => {
+      console.table("setAllSpaceArray", snapshot?.data()?.AllBanks);
+      console.table(snapshot?.data());
+
+      let BankObj = {};
+      snapshot?.data()?.AllBanks?.forEach((element) => {
+        BankObj[element?.code] = {
+          code: element?.code,
+          bankName: element?.bankName,
+          deleteFlag: element?.deleteFlag,
+          type: element?.type,
+        };
+      });
+      setAllBanksInfo({
+        bankDataArr: snapshot?.data()?.AllBanks,
+        bankDataObj: BankObj,
+        activeBankCode: snapshot?.data()?.activeBankCode,
+      });
     });
   }
 
@@ -228,6 +255,7 @@ export default function ContentContainer(props) {
         "color: #ffffff;"
       );
       console.table(snapshot?.data()?.AllTransactions);
+      console.log(JSON.stringify(snapshot?.data()?.AllTransactions));
       setAllTransactions(snapshot?.data()?.AllTransactions);
     });
 
@@ -483,14 +511,17 @@ export default function ContentContainer(props) {
   }
 
   return (
-    <div className="w-full h-[100svh] flex flex-col justify-start items-start bg-[#000000]">
+    <div className="w-full h-[100svh] overflow-hidden flex flex-col justify-start items-start bg-[#000000] ">
       {activeSection === "home" ? (
         <div className="w-full h-full flex flex-col justify-start items-start">
           <HomeSection allTransactions={allTransactions} />
         </div>
       ) : activeSection === "chart" ? (
         <div className="w-full h-full flex flex-col justify-start items-start">
-          <ChartSection allTransactions={allTransactions} />
+          <ChartSection
+            allTransactions={allTransactions}
+            allBanksInfo={allBanksInfo}
+          />
         </div>
       ) : activeSection === "settings" ? (
         <>

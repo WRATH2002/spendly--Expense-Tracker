@@ -478,6 +478,8 @@ export default function SplitContainer({
 
   return (
     <>
+      <div class="absolute inset-0 noise pointer-events-none"></div>
+      <div className="grad rounded-t-full blur-[200px] w-full h-[200px] fixed left-0 bottom-[0px] -z-[0]"></div>
       {/* <AddSplitTransactionModal /> */}
       {activeSplitSpace?.length > 0 ? (
         showContent ? (
@@ -773,7 +775,7 @@ export default function SplitContainer({
         <>
           <div
             className={
-              "fixed w-full h-[100svh] flex justify-center items-center left-0 top-0 z-[70] text-[#fff] backdrop-blur-sm px-[20px] bg-[#00000076]" +
+              "fixed w-full h-[100svh] flex justify-center items-center left-0 top-0 z-[70] text-[#fff] backdrop-blur-sm px-[20px] bg-[#00000000]" +
               (newSpaceModal ? " visible" : " hidden")
             }
             onClick={(e) => {
