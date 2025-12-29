@@ -4,6 +4,7 @@ import {
   ArrowLeft01Icon,
   ArrowRight01Icon,
   ArrowRight04Icon,
+  BankIcon,
   Calendar01Icon,
   Calendar03Icon,
   Calendar04Icon,
@@ -11,6 +12,8 @@ import {
   FilterVerticalIcon,
   TradeDownIcon,
   TradeUpIcon,
+  Wallet02Icon,
+  Wallet05Icon,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import React, { useEffect, useState } from "react";
@@ -197,6 +200,7 @@ export default function ChartSection({ allTransactions, allBanksInfo }) {
       bankCode: "",
       isActive: false,
       isPrimary: false,
+      type: "",
     };
 
     bankDataArr?.forEach((data) => {
@@ -205,6 +209,7 @@ export default function ChartSection({ allTransactions, allBanksInfo }) {
         bankCode: data?.code,
         isActive: !data?.deleteFlag,
         isPrimary: activeBankCode == data?.code,
+        type: data?.type,
       };
       bankInfoObjArr?.push({ bankInfo: bankInfoObj });
       banksInsertedArr[data?.code] = {
@@ -248,7 +253,17 @@ export default function ChartSection({ allTransactions, allBanksInfo }) {
       totalRecieved: 0,
     };
 
-    return bankInfoObjArr;
+    console.log(
+      "SDF",
+      getBankWiseInfo(allTransactions, "2025-12-01", "2025-12-31")
+    );
+
+    return {
+      banks: bankInfoObjArr?.filter((data) => data?.bankInfo?.type == "Bank"),
+      wallets: bankInfoObjArr?.filter(
+        (data) => data?.bankInfo?.type == "Wallet"
+      ),
+    };
   }
 
   return (
@@ -258,66 +273,16 @@ export default function ChartSection({ allTransactions, allBanksInfo }) {
       <div className="w-full h-full flex flex-col justify-start items-center overflow-y-scroll bg-[#00000000] p-[15px] text-[#D4D4D4] font-[geist] z-0 ">
         <div className="w-full flex flex-col justify-start items-start p-[10px]">
           <div className="w-full flex flex-col justify-start items-start bg-[#ffffff12] rounded-xl p-[15px] px-[20px] font-[geist]">
-            <div className="w-full flex justify-between items-center text-[14px] text-[#606060]">
-              <div className="font-[600]">Your Banks</div>
-              <div>See All</div>
+            <div className="w-full flex justify-between items-center text-[12px] text-[#606060]">
+              <div className="font-[500]">My Banks</div>
+              {/* <div>See All</div> */}
             </div>
             <div className="w-full border-t border-[#202020] my-[15px]"></div>
 
-            {/* {getBankWiseInfo(
-              groupAndSortTransactions(allTransactions),
-              "",
-              ""
-            )?.map((data, index) => {
-              return (
-                <>
-                  <div
-                    className={
-                      "w-full border-t border-[#202020] my-[15px]" +
-                      (index != 0 ? " visible" : " hidden")
-                    }
-                  ></div>
-                  <div
-                    className="w-full flex justify-start items-start"
-                    key={index}
-                  >
-                    <div></div>
-                    <div className="w-full flex flex-col justify-start items-start ">
-                      <div className="font-[600]">
-                        {allBanksInfo?.bankDataObj[data?.bankCode]?.bankName}
-                      </div>
-                      <div className="text-[10px] text-[#676767] mt-[5px]">
-                        This month expense
-                      </div>
-                      <div className="w-full flex justify-start items-center text-[12px] text-[#7e7e7e] font-[600] ">
-                        <span className="mr-[5px]">₹</span>
-                        {formatAmount(data?.totalOutward)}
-                      </div>
-                      <div
-                        className={
-                          "px-[6px] py-[1px] rounded-md bg-[#69e90013] border border-[#69e90006] text-[#5ddd02c5] text-[10px] mt-[10px] flex justify-center items-center" +
-                          (allBanksInfo?.activeBankCode == data?.bankCode
-                            ? " visible"
-                            : " hidden")
-                        }
-                      >
-                        
-                        <span class="relative flex h-[5px] w-[5px] mr-[5px]">
-                          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#5ddd02c5] opacity-75"></span>
-                          <span class="relative inline-flex rounded-full h-[5px] w-[5px] bg-[#5ddd02c5]"></span>
-                        </span>
-                        Primary
-                      </div>
-                    </div>
-                    <div></div>
-                  </div>
-                </>
-              );
-            })} */}
             {getBankFullDetailsWithInfo(
               groupAndSortTransactions(allTransactions),
               allBanksInfo
-            )?.map((data, index) => {
+            )?.banks?.map((data, index) => {
               return (
                 <>
                   <div
@@ -330,15 +295,22 @@ export default function ChartSection({ allTransactions, allBanksInfo }) {
                     className="w-full flex justify-start items-start"
                     key={index}
                   >
-                    <div></div>
+                    <div className="min-w-[40px] h-[40px] mr-[20px] rounded-md flex justify-center items-center bg-[#ffffff12] text-[#999999] mt-[4px] ">
+                      <HugeiconsIcon
+                        icon={BankIcon}
+                        size={18}
+                        strokeWidth={2}
+                        className=""
+                      />
+                    </div>
                     <div className="w-full flex flex-col justify-start items-start ">
                       <div className="font-[600]">
                         {data?.bankInfo?.bankName}
                       </div>
-                      <div className="text-[10px] text-[#676767] mt-[5px]">
+                      <div className="text-[12px] text-[#676767] mt-[5px]">
                         This month expense
                       </div>
-                      <div className="w-full flex justify-start items-center text-[12px] text-[#7e7e7e] font-[600] ">
+                      <div className="w-full flex justify-start items-center text-[14px] text-[#a8a8a8] font-[500] ">
                         <span className="mr-[5px]">₹</span>
                         {formatAmount(data?.quickInfo?.thisMonth)}
                       </div>
@@ -362,7 +334,120 @@ export default function ChartSection({ allTransactions, allBanksInfo }) {
                         Primary
                       </div>
                     </div>
-                    <div></div>
+                    <div className="mt-auto mb-auto">
+                      <HugeiconsIcon
+                        icon={ArrowRight01Icon}
+                        size={18}
+                        strokeWidth={2}
+                        className=""
+                      />
+                    </div>
+                  </div>
+                </>
+              );
+            })}
+            {/* <div className="w-full flex justify-start items-start">
+              <div></div>
+              <div className="w-full flex flex-col justify-start items-start ">
+                <div className="font-[600]">HDFC Bank</div>
+                <div className="text-[10px] text-[#676767] mt-[5px]">
+                  This month expense
+                </div>
+                <div className="w-full flex justify-start items-center text-[12px] text-[#7e7e7e] font-[600] ">
+                  <span className="mr-[5px]">₹</span>38,435.56
+                </div>
+                <div className="px-[8px] py-[2px] rounded-lg bg-[#69e9001f] border border-[#69e90011] text-[#5ddd02c5] text-[10px] mt-[10px]">
+                  Primary
+                </div>
+              </div>
+              <div></div>
+            </div>
+            <div className="w-full border-t border-[#202020] my-[15px]"></div>
+            <div className="w-full flex justify-start items-start">
+              <div></div>
+              <div className="w-full flex flex-col justify-start items-start ">
+                <div className="font-[600]">KOTAK MAHINDRA Bank</div>
+                <div className="text-[10px] text-[#676767] mt-[5px]">
+                  This month expense
+                </div>
+                <div className="w-full flex justify-start items-center text-[12px] text-[#7e7e7e] font-[600] ">
+                  <span className="mr-[5px]">₹</span>12,395.56
+                </div>
+               
+              </div>
+              <div></div>
+            </div> */}
+          </div>
+          <div className="w-full flex flex-col justify-start items-start bg-[#ffffff12] rounded-xl p-[15px] px-[20px] font-[geist] mt-[20px]">
+            <div className="w-full flex justify-between items-center text-[12px] text-[#606060]">
+              <div className="font-[500]">My Wallets</div>
+              {/* <div>See All</div> */}
+            </div>
+            <div className="w-full border-t border-[#202020] my-[15px]"></div>
+
+            {getBankFullDetailsWithInfo(
+              groupAndSortTransactions(allTransactions),
+              allBanksInfo
+            )?.wallets?.map((data, index) => {
+              return (
+                <>
+                  <div
+                    className={
+                      "w-full border-t border-[#202020] my-[15px]" +
+                      (index != 0 ? " visible" : " hidden")
+                    }
+                  ></div>
+                  <div
+                    className="w-full flex justify-start items-start"
+                    key={index}
+                  >
+                    <div className="min-w-[40px] h-[40px] mr-[20px] rounded-md flex justify-center items-center bg-[#ffffff12] text-[#999999] mt-[4px] ">
+                      <HugeiconsIcon
+                        icon={Wallet05Icon}
+                        size={18}
+                        strokeWidth={2}
+                        className=""
+                      />
+                    </div>
+                    <div className="w-full flex flex-col justify-start items-start ">
+                      <div className="font-[600]">
+                        {data?.bankInfo?.bankName}
+                      </div>
+                      <div className="text-[12px] text-[#676767] mt-[5px]">
+                        This month expense
+                      </div>
+                      <div className="w-full flex justify-start items-center text-[14px] text-[#a8a8a8] font-[500] ">
+                        <span className="mr-[5px]">₹</span>
+                        {formatAmount(data?.quickInfo?.thisMonth)}
+                      </div>
+                      <div
+                        className={
+                          "px-[6px] py-[1px] rounded-md bg-[#69e90013] border border-[#69e90006] text-[#5ddd02c5] text-[10px] mt-[10px] flex justify-center items-center" +
+                          (data?.bankInfo?.isPrimary ? " visible" : " hidden")
+                        }
+                      >
+                        {/* <HugeiconsIcon
+                          icon={CircleIcon}
+                          size={5}
+                          strokeWidth={1}
+                          fill="currentColor"
+                          className="mr-[5px]"
+                        />{" "} */}
+                        <span class="relative flex h-[5px] w-[5px] mr-[5px]">
+                          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#5ddd02c5] opacity-75"></span>
+                          <span class="relative inline-flex rounded-full h-[5px] w-[5px] bg-[#5ddd02c5]"></span>
+                        </span>
+                        Primary
+                      </div>
+                    </div>
+                    <div className="mt-auto mb-auto">
+                      <HugeiconsIcon
+                        icon={ArrowRight01Icon}
+                        size={18}
+                        strokeWidth={2}
+                        className=""
+                      />
+                    </div>
                   </div>
                 </>
               );
