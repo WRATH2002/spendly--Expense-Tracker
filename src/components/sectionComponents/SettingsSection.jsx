@@ -40,6 +40,14 @@ export default function SettingsSection(props) {
     });
   }
 
+  function changeTransactionView() {
+    const user = firebase.auth().currentUser;
+
+    const transactionsRef = db.collection("userSpace").doc(user?.uid).update({
+      showDateWiseGrouped: !props?.accountInfo?.showDateWiseGrouped,
+    });
+  }
+
   // ---- Function to sign out
   const userSignOut = () => {
     signOut(auth)
@@ -107,6 +115,7 @@ export default function SettingsSection(props) {
           Account
         </div>
         <div className="w-[calc(100%-30px)] ml-[15px] border-t-[1px] border-[#222224] "></div> */}
+
         <div
           className={
             "w-full px-[15px] flex justify-between items-center h-[50px] " +
@@ -138,6 +147,46 @@ export default function SettingsSection(props) {
               className={
                 "h-[22px] w-[22px] rounded-full drop-shadow-lg " +
                 (props?.accountInfo?.theme
+                  ? " ml-[15px] bg-[#ffffff]"
+                  : " ml-[3px] bg-[#2b2b2e]")
+              }
+              style={{ transition: ".3s" }}
+            ></div>
+          </div>
+        </div>
+        <div
+          className={
+            "w-full px-[15px] flex justify-between items-center h-[50px] " +
+            (props?.accountInfo?.showDateWiseGrouped
+              ? " active:bg-[#fafafa00]"
+              : " active:bg-[#1C1C1E00]")
+          }
+          onClick={() => {
+            changeTransactionView();
+          }}
+        >
+          <div className="flex justify-start items-center">
+            <HugeiconsIcon
+              icon={PaintBrush04Icon}
+              size={20}
+              strokeWidth={1.7}
+              className="mr-[10px]"
+            />
+            Group Transaction Date Wise
+          </div>
+          <div
+            className={
+              "w-[40px] h-[28px] rounded-full flex justify-start items-center" +
+              (props?.accountInfo?.showDateWiseGrouped
+                ? " bg-[#7ED957]"
+                : " bg-[#000000]")
+            }
+            style={{ transition: ".3s" }}
+          >
+            <div
+              className={
+                "h-[22px] w-[22px] rounded-full drop-shadow-lg " +
+                (props?.accountInfo?.showDateWiseGrouped
                   ? " ml-[15px] bg-[#ffffff]"
                   : " ml-[3px] bg-[#2b2b2e]")
               }

@@ -220,7 +220,18 @@ export default function ChartSection({ allTransactions, allBanksInfo }) {
       conclusion: "",
     };
 
-    console.log("BANK001", getThisMonthExpense(transactions, "BANK003"));
+    bankInfoObjArr?.forEach((data, index) => {
+      // console.log(
+      //   `${data?.bankInfo?.bankCode}`,
+      //   getThisMonthExpense(transactions, data?.bankInfo?.bankCode)
+      // );
+      bankInfoObjArr[index] = {
+        ...data,
+        quickInfo: getThisMonthExpense(transactions, data?.bankInfo?.bankCode),
+      };
+    });
+    console.log(bankInfoObjArr);
+
     // let bankFullInfoWithDetailObjArr = [];
     let bankFullInfoWithDetailObj = {
       totalIncome: 0,
@@ -236,6 +247,8 @@ export default function ChartSection({ allTransactions, allBanksInfo }) {
       totalTransfered: 0,
       totalRecieved: 0,
     };
+
+    return bankInfoObjArr;
   }
 
   return (
@@ -251,7 +264,7 @@ export default function ChartSection({ allTransactions, allBanksInfo }) {
             </div>
             <div className="w-full border-t border-[#202020] my-[15px]"></div>
 
-            {getBankWiseInfo(
+            {/* {getBankWiseInfo(
               groupAndSortTransactions(allTransactions),
               "",
               ""
@@ -288,6 +301,53 @@ export default function ChartSection({ allTransactions, allBanksInfo }) {
                             : " hidden")
                         }
                       >
+                        
+                        <span class="relative flex h-[5px] w-[5px] mr-[5px]">
+                          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#5ddd02c5] opacity-75"></span>
+                          <span class="relative inline-flex rounded-full h-[5px] w-[5px] bg-[#5ddd02c5]"></span>
+                        </span>
+                        Primary
+                      </div>
+                    </div>
+                    <div></div>
+                  </div>
+                </>
+              );
+            })} */}
+            {getBankFullDetailsWithInfo(
+              groupAndSortTransactions(allTransactions),
+              allBanksInfo
+            )?.map((data, index) => {
+              return (
+                <>
+                  <div
+                    className={
+                      "w-full border-t border-[#202020] my-[15px]" +
+                      (index != 0 ? " visible" : " hidden")
+                    }
+                  ></div>
+                  <div
+                    className="w-full flex justify-start items-start"
+                    key={index}
+                  >
+                    <div></div>
+                    <div className="w-full flex flex-col justify-start items-start ">
+                      <div className="font-[600]">
+                        {data?.bankInfo?.bankName}
+                      </div>
+                      <div className="text-[10px] text-[#676767] mt-[5px]">
+                        This month expense
+                      </div>
+                      <div className="w-full flex justify-start items-center text-[12px] text-[#7e7e7e] font-[600] ">
+                        <span className="mr-[5px]">₹</span>
+                        {formatAmount(data?.quickInfo?.thisMonth)}
+                      </div>
+                      <div
+                        className={
+                          "px-[6px] py-[1px] rounded-md bg-[#69e90013] border border-[#69e90006] text-[#5ddd02c5] text-[10px] mt-[10px] flex justify-center items-center" +
+                          (data?.bankInfo?.isPrimary ? " visible" : " hidden")
+                        }
+                      >
                         {/* <HugeiconsIcon
                           icon={CircleIcon}
                           size={5}
@@ -307,10 +367,6 @@ export default function ChartSection({ allTransactions, allBanksInfo }) {
                 </>
               );
             })}
-            {getBankFullDetailsWithInfo(
-              getBankFullDetailsWithInfo(allTransactions),
-              allBanksInfo
-            )}
             {/* <div className="w-full flex justify-start items-start">
               <div></div>
               <div className="w-full flex flex-col justify-start items-start ">

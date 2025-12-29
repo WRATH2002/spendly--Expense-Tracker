@@ -885,7 +885,10 @@ function getThisMonthExpense(allTransactionList, activeBankCode) {
     return {
       thisMonth: totalSpentThisMonth,
       prevMonth: totalSpentLastMonth,
-      conclusion: `${percentage}% upper than last month`,
+      conclusion:
+        totalSpentLastMonth == 0
+          ? "No past data available"
+          : `${percentage}% upper than last month`,
       isMore: true,
       isSame: false,
     };
@@ -897,7 +900,10 @@ function getThisMonthExpense(allTransactionList, activeBankCode) {
     return {
       thisMonth: totalSpentThisMonth,
       prevMonth: totalSpentLastMonth,
-      conclusion: `${Math.round(percentage)}% lower than last month`,
+      conclusion:
+        totalSpentLastMonth == 0
+          ? "No past data available"
+          : `${Math.round(percentage)}% lower than last month`,
       isMore: false,
       isSame: false,
     };

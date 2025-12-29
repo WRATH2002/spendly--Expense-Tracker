@@ -108,6 +108,7 @@ export default function ContentContainer(props) {
     userID: "",
     budgte: 0,
     income: 0,
+    showDateWiseGrouped: false,
   });
   const [activeSplitSpace, setActiveSplitSpace] = useState("");
 
@@ -115,6 +116,15 @@ export default function ContentContainer(props) {
   const [allSpaceInfo, setAllSpaceInfo] = useState([]); // to render spaces
   const [allSpaceInfoTemp, setAllSpaceInfoTemp] = useState([]); // to render spaces
   const [allBanksInfo, setAllBanksInfo] = useState({});
+
+  const [fromBank, setFromBank] = useState({
+    name: "",
+    code: "",
+  });
+  const [toBank, setToBank] = useState({
+    name: "",
+    code: "",
+  });
 
   useEffect(() => {
     const authUserLoginState = onAuthStateChanged(auth, (user) => {
@@ -176,10 +186,38 @@ export default function ContentContainer(props) {
           type: element?.type,
         };
       });
+
+      let grouped = {};
+      snapshot?.data()?.AllBanks?.forEach((element) => {
+        if (grouped[element?.type]) {
+          grouped[element?.type] = [
+            ...grouped[element?.type],
+            {
+              code: element?.code,
+              name: element?.bankName,
+              deleteFlag: element?.deleteFlag,
+              type: element?.type,
+            },
+          ];
+        } else {
+          grouped[element?.type] = [
+            {
+              code: element?.code,
+              name: element?.bankName,
+              deleteFlag: element?.deleteFlag,
+              type: element?.type,
+            },
+          ];
+        }
+      });
+
+      console.log("ffffff->", grouped);
+
       setAllBanksInfo({
         bankDataArr: snapshot?.data()?.AllBanks,
         bankDataObj: BankObj,
         activeBankCode: snapshot?.data()?.activeBankCode,
+        groupedData: grouped,
       });
     });
   }
@@ -214,6 +252,7 @@ export default function ContentContainer(props) {
         userID: snapshot?.data()?.userID,
         budgte: snapshot?.data()?.budgte,
         income: snapshot?.data()?.income,
+        showDateWiseGrouped: snapshot?.data()?.showDateWiseGrouped,
       });
     });
   }
@@ -254,8 +293,8 @@ export default function ContentContainer(props) {
         "color: #1caee8; font-weight: bold;",
         "color: #ffffff;"
       );
-      console.table(snapshot?.data()?.AllTransactions);
-      console.log(JSON.stringify(snapshot?.data()?.AllTransactions));
+      // console.table(snapshot?.data()?.AllTransactions);
+      // console.log(JSON.stringify(snapshot?.data()?.AllTransactions));
       setAllTransactions(snapshot?.data()?.AllTransactions);
     });
 
@@ -514,7 +553,10 @@ export default function ContentContainer(props) {
     <div className="w-full h-[100svh] overflow-hidden flex flex-col justify-start items-start bg-[#000000] ">
       {activeSection === "home" ? (
         <div className="w-full h-full flex flex-col justify-start items-start">
-          <HomeSection allTransactions={allTransactions} />
+          <HomeSection
+            showDateWiseGrouped={accountInfo?.showDateWiseGrouped}
+            allTransactions={allTransactions}
+          />
         </div>
       ) : activeSection === "chart" ? (
         <div className="w-full h-full flex flex-col justify-start items-start">
@@ -581,6 +623,11 @@ export default function ContentContainer(props) {
           allSpaceInfoTemp={allSpaceInfoTemp}
           setAllSpaceInfoTemp={setAllSpaceInfoTemp}
           accountInfo={accountInfo}
+          setFromBank={setFromBank}
+          fromBank={fromBank}
+          toBank={toBank}
+          setToBank={setToBank}
+          allBanksInfo={allBanksInfo}
         />
       )}
 

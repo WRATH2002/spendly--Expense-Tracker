@@ -24,12 +24,12 @@ export default function DropDownInput({
 }) {
   return (
     <div className="flex flex-col justify-start items-start text-[white] text-[14px]">
-      <label className="mb-[5px] text-[12px] text-[#ababab] font-[500]">
+      <label className="mb-[5px] ml-[12px] text-[12px] text-[#777777] font-[500] ">
         {label} {isRequired ? "*" : ""}
       </label>
       <div className="w-full flex justify-start items-center">
-        <input
-          className={`w-full h-[42px] bg-[#000] rounded-lg px-[12px] placeholder:text-[#777777] outline-none active:outline-none text-[#ffffff] `}
+        <div
+          className={`w-full h-[42px] bg-[#000] rounded-lg px-[12px] placeholder:text-[#777777] outline-none active:outline-none text-[#ffffff] pr-[35px] text-ellipsis whitespace-nowrap overflow-hidden flex justify-start items-center`}
           type={"text"}
           //   disabled={!isEditable}
           readOnly
@@ -42,7 +42,13 @@ export default function DropDownInput({
           onBlur={() => {
             // setShowDropdown(false);
           }}
-        ></input>
+        >
+          <div
+            className={`w-full   text-ellipsis whitespace-nowrap overflow-hidden `}
+          >
+            {value}
+          </div>
+        </div>
         {inputType == "text" && (
           <div className="h-[38px] w-[38px] ml-[-38px] flex justify-center items-center p-[5px]">
             <div
@@ -86,11 +92,16 @@ export default function DropDownInput({
                   className="min-h-[30px] w-full flex justify-start items-center cursor-pointer"
                   onClick={(e) => {
                     e.stopPropagation();
-                    setValue(data?.name);
-                    setShowDropdown("");
+                    if (label == "From Bank" || label == "To Bank") {
+                      setValue({ name: data?.name, code: data?.code });
+                      setShowDropdown("");
+                    } else {
+                      setValue(data?.name);
+                      setShowDropdown("");
+                    }
                   }}
                 >
-                  {label !== "Payment Type" && (
+                  {label == "Category" && (
                     <div
                       className="mr-[10px] rounded-full flex justify-start items-center font-[em] "
                       dangerouslySetInnerHTML={{
@@ -99,8 +110,12 @@ export default function DropDownInput({
                       }}
                     ></div>
                   )}
-
-                  {data?.name}
+                  <div
+                    key={index}
+                    className=" w-full  whitespace-nowrap overflow-hidden text-ellipsis"
+                  >
+                    {data?.name}
+                  </div>
                 </div>
               );
             })}

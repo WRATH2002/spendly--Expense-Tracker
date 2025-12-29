@@ -118,6 +118,7 @@ export default function Signup() {
       photoURL: "",
       userID: user?.uid,
       theme: false,
+      showDateWiseGrouped: true,
     });
 
     // ---------- Inside User Space creating All Transaction Space
@@ -144,6 +145,15 @@ export default function Signup() {
       .doc("AllSplitSpaceName")
       .set({
         AllSplitSpaceName: [],
+      });
+
+    db.collection("userSpace")
+      .doc(user.uid)
+      .collection("AllTransactionsSpace")
+      .doc("Banks")
+      .set({
+        AllBanks: [],
+        activeBankCode: "",
       });
 
     console.log(

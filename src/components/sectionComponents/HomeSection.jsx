@@ -794,7 +794,7 @@ export default function HomeSection(props) {
                     mainDataArr={groupAndSortTransactions(
                       props?.allTransactions
                     )}
-                    seperateByDate={false}
+                    seperateByDate={props?.showDateWiseGrouped}
                   />
                 );
               }

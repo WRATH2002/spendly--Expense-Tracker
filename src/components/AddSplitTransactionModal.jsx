@@ -52,6 +52,11 @@ export default function AddSplitTransactionModal({
   allSpaceInfoTemp,
   setAllSpaceInfoTemp,
   accountInfo,
+  setFromBank,
+  fromBank,
+  toBank,
+  setToBank,
+  allBanksInfo,
 }) {
   const [includeToSplit, setIncludeToSplit] = useState(false);
   const [selectedMember, setSelectedMember] = useState([]);
@@ -81,6 +86,38 @@ export default function AddSplitTransactionModal({
   }, [activeSplitSpace]);
 
   const formFormat = [
+    [
+      {
+        label: "From Bank",
+        isRequired: true,
+        placeholder: "",
+        value: fromBank?.name,
+        setValue: setFromBank,
+        isEditable: false,
+        // hasRequirements: false,
+        inputType: "text",
+        inputComponent: "DropdownInput",
+        dropDownList: allBanksInfo?.groupedData?.Bank,
+        showDropdown: showDropdown,
+        setShowDropdown: setShowDropdown,
+        // requirementFunction: requirementOnlyNumber,
+      },
+      {
+        label: "To Bank",
+        isRequired: false,
+        placeholder: "",
+        value: toBank?.name,
+        setValue: setToBank,
+        isEditable: false,
+        // hasRequirements: false,
+        inputType: "text",
+        inputComponent: "DropdownInput",
+        dropDownList: allBanksInfo?.groupedData?.Wallet,
+        showDropdown: showDropdown,
+        setShowDropdown: setShowDropdown,
+        // requirementFunction: requirementOnlyNumber,
+      },
+    ],
     [
       {
         label: "Transaction Name",
@@ -209,522 +246,27 @@ export default function AddSplitTransactionModal({
             transactionDetail: detail,
             payeeName: accountInfo?.name,
             transactionStatus: "Completed",
-            from: "",
-            to: "",
+            from: fromBank?.code,
+            to: toBank?.code,
           }),
         });
     }
     setShowAddTransactionModal(false);
   }
 
-  function ff() {
-    let temp = [
-      {
-        transactionPaymentType: "Online",
-        payeeName: "Himadri Purkait",
-        transactionDate: "2025-09-29T00:00:00.000Z",
-        transactionDetail: "",
-        transactionCategory: "Subscription",
-        transactionType: "normal",
-        isInward: true,
-        transactionName: "Bank account opening",
-        transactionAmount: "10",
-        transactionStatus: "Completed",
-        from: "",
-        to: "BANK001",
-      },
-      {
-        transactionType: "normal",
-        transactionCategory: "Salary",
-        payeeName: "Himadri Purkait",
-        transactionName: "TCS - Salary Credited",
-        transactionAmount: "69191",
-        transactionDate: "2025-09-30T00:00:00.000Z",
-        transactionStatus: "Completed",
-        transactionPaymentType: "Online",
-        isInward: true,
-        transactionDetail: "",
-        from: "",
-        to: "BANK001",
-      },
-      {
-        transactionType: "normal",
-        transactionName: "MAA - Monthly Bank Transfer",
-        transactionDate: "2025-09-30T00:00:00.000Z",
-        transactionDetail: "",
-        payeeName: "Himadri Purkait",
-        transactionAmount: "10000",
-        isInward: false,
-        transactionStatus: "Completed",
-        transactionPaymentType: "Online",
-        transactionCategory: "Bill",
-        from: "BANK001",
-        to: "",
-      },
-      {
-        transactionPaymentType: "Online",
-        transactionDate: "2025-09-30T00:00:00.000Z",
-        transactionStatus: "Completed",
-        transactionCategory: "Bill",
-        payeeName: "Himadri Purkait",
-        transactionDetail: "",
-        transactionName: "MISC - Personal Use",
-        isInward: false,
-        transactionType: "normal",
-        transactionAmount: "6000",
-        from: "BANK001",
-        to: "BANK002",
-      },
-      {
-        transactionCategory: "Bill",
-        transactionStatus: "Completed",
-        transactionAmount: "1000",
-        transactionDetail: "",
-        payeeName: "Himadri Purkait",
-        transactionPaymentType: "Online",
-        isInward: false,
-        transactionDate: "2025-10-23T00:00:00.000Z",
-        transactionName: "MISC - Personal Use",
-        transactionType: "normal",
-        from: "BANK001",
-        to: "BANK002",
-      },
-      {
-        transactionName: "Big Bazaar Shopping",
-        isInward: false,
-        payeeName: "Himadri Purkait",
-        transactionType: "normal",
-        transactionStatus: "Completed",
-        transactionAmount: "799.55",
-        transactionDate: "2025-10-25T00:00:00.000Z",
-        transactionPaymentType: "Online",
-        transactionDetail: "",
-        transactionCategory: "Shopping",
-        from: "BANK001",
-        to: "",
-      },
-      {
-        payeeName: "Himadri Purkait",
-        transactionPaymentType: "Online",
-        transactionCategory: "Bill",
-        transactionName: "WIFI Recharge",
-        isInward: false,
-        transactionAmount: "472",
-        transactionDetail: "",
-        transactionStatus: "Completed",
-        transactionDate: "2025-10-25T00:00:00.000Z",
-        transactionType: "normal",
-        from: "BANK001",
-        to: "",
-      },
-      {
-        transactionType: "normal",
-        transactionPaymentType: "Online",
-        transactionDate: "2025-10-26T00:00:00.000Z",
-        transactionStatus: "Completed",
-        isInward: false,
-        transactionDetail: "",
-        transactionCategory: "Bill",
-        payeeName: "Himadri Purkait",
-        transactionAmount: "1000",
-        transactionName: "MISC - Personal Use",
-        from: "BANK001",
-        to: "BANK002",
-      },
-      {
-        transactionPaymentType: "Online",
-        transactionStatus: "Completed",
-        transactionAmount: "54191",
-        isInward: true,
-        transactionType: "normal",
-        payeeName: "Himadri Purkait",
-        transactionName: "TCS - Salary Credited",
-        transactionDate: "2025-10-31T00:00:00.000Z",
-        transactionDetail: "",
-        transactionCategory: "Salary",
-        from: "",
-        to: "BANK001",
-      },
-      {
-        transactionStatus: "Completed",
-        transactionPaymentType: "Online",
-        transactionDate: "2025-10-31T00:00:00.000Z",
-        transactionName: "MISC - Personal Use",
-        isInward: false,
-        transactionCategory: "Bill",
-        transactionDetail: "",
-        transactionAmount: "7000",
-        transactionType: "normal",
-        payeeName: "Himadri Purkait",
-        from: "BANK001",
-        to: "BANK002",
-      },
-      {
-        transactionDate: "2025-10-31T00:00:00.000Z",
-        isInward: false,
-        transactionPaymentType: "Online",
-        transactionName: "MAA - Monthly Bank Transfer",
-        transactionDetail: "",
-        payeeName: "Himadri Purkait",
-        transactionType: "normal",
-        transactionAmount: "5000",
-        transactionCategory: "Bill",
-        transactionStatus: "Completed",
-        from: "BANK001",
-        to: "",
-      },
-      {
-        transactionType: "normal",
-        transactionDate: "2025-11-02T00:00:00.000Z",
-        transactionStatus: "Completed",
-        transactionDetail: "",
-        transactionCategory: "Bill",
-        transactionPaymentType: "Online",
-        transactionName: "Payment to Biswanath Kaku For Building Home Temple",
-        payeeName: "Himadri Purkait",
-        isInward: false,
-        transactionAmount: "4999",
-        from: "BANK001",
-        to: "",
-      },
-      {
-        transactionPaymentType: "Online",
-        isInward: false,
-        transactionType: "normal",
-        transactionCategory: "Food",
-        transactionDate: "2025-11-02T00:00:00.000Z",
-        transactionName:
-          "Payment to Partha Kaku for Griha Prabesh Arrangements",
-        transactionDetail: "",
-        payeeName: "Himadri Purkait",
-        transactionAmount: "22000",
-        transactionStatus: "Completed",
-        from: "BANK001",
-        to: "",
-      },
-      {
-        transactionAmount: "2000",
-        transactionName: "MISC - Personal Use",
-        transactionPaymentType: "Online",
-        payeeName: "Himadri Purkait",
-        transactionStatus: "Completed",
-        transactionCategory: "Bill",
-        transactionDetail: "",
-        transactionDate: "2025-11-12T00:00:00.000Z",
-        isInward: false,
-        transactionType: "normal",
-        from: "BANK001",
-        to: "BANK002",
-      },
-      {
-        transactionName: "Advance Payment for White Curtains",
-        isInward: false,
-        transactionCategory: "Bill",
-        transactionDate: "2025-11-15T00:00:00.000Z",
-        transactionDetail: "",
-        payeeName: "Himadri Purkait",
-        transactionType: "normal",
-        transactionAmount: "14933",
-        transactionPaymentType: "Online",
-        transactionStatus: "Completed",
-        from: "BANK001",
-        to: "",
-      },
-      {
-        transactionName: "Advance Payment for Main Curtains",
-        transactionDetail: "",
-        payeeName: "Himadri Purkait",
-        transactionStatus: "Completed",
-        transactionPaymentType: "Online",
-        transactionCategory: "Bill",
-        transactionDate: "2025-11-18T00:00:00.000Z",
-        transactionType: "normal",
-        transactionAmount: "4500",
-        isInward: false,
-        from: "BANK001",
-        to: "",
-      },
-      {
-        isInward: false,
-        transactionCategory: "Bill",
-        transactionName: "Payment to Biswanath Kaku For remaining Home Temple",
-        transactionType: "normal",
-        transactionStatus: "Completed",
-        transactionPaymentType: "Online",
-        payeeName: "Himadri Purkait",
-        transactionDate: "2025-11-21T00:00:00.000Z",
-        transactionAmount: "5000",
-        transactionDetail: "",
-        from: "BANK001",
-        to: "",
-      },
-      {
-        transactionDate: "2025-11-23T00:00:00.000Z",
-        isInward: false,
-        transactionName: "MISC - Payment to Niladri",
-        transactionCategory: "Bill",
-        payeeName: "Himadri Purkait",
-        transactionDetail: "",
-        transactionAmount: "1000",
-        transactionType: "normal",
-        transactionPaymentType: "Online",
-        transactionStatus: "Completed",
-        from: "BANK001",
-        to: "",
-      },
-      {
-        transactionAmount: "3540",
-        payeeName: "Himadri Purkait",
-        transactionStatus: "Completed",
-        transactionName: "Payment for Main Curtains",
-        transactionCategory: "Bill",
-        transactionType: "normal",
-        transactionDate: "2025-11-23T00:00:00.000Z",
-        transactionDetail: "",
-        transactionPaymentType: "Online",
-        isInward: false,
-        from: "BANK001",
-        to: "",
-      },
-      {
-        transactionPaymentType: "Online",
-        transactionDate: "2025-11-23T00:00:00.000Z",
-        isInward: false,
-        transactionType: "normal",
-        transactionName: "Party to Friends in Calcutta Bistro",
-        payeeName: "Himadri Purkait",
-        transactionStatus: "Completed",
-        transactionAmount: "1465",
-        transactionCategory: "Food",
-        transactionDetail: "",
-        from: "BANK001",
-        to: "",
-      },
-      {
-        payeeName: "Himadri Purkait",
-        transactionName: "MISC - Personal Use",
-        transactionCategory: "Bill",
-        transactionAmount: "200",
-        transactionDate: "2025-11-25T00:00:00.000Z",
-        transactionStatus: "Completed",
-        isInward: false,
-        transactionType: "normal",
-        transactionPaymentType: "Online",
-        transactionDetail: "",
-        from: "BANK001",
-        to: "",
-      },
-      {
-        transactionName: "Gate Fee Reimbursement ",
-        transactionDetail: "",
-        payeeName: "Himadri Purkait",
-        transactionCategory: "Bill",
-        isInward: true,
-        transactionStatus: "Completed",
-        transactionAmount: "1800",
-        transactionDate: "2025-11-14T00:00:00.000Z",
-        transactionType: "normal",
-        transactionPaymentType: "Online",
-        from: "",
-        to: "BANK001",
-      },
-      {
-        transactionDetail: "",
-        transactionAmount: "20371",
-        transactionDate: "2025-11-21T00:00:00.000Z",
-        transactionPaymentType: "Online",
-        transactionName: "Sold IPO - Physics Wallah",
-        transactionStatus: "Completed",
-        payeeName: "Himadri Purkait",
-        isInward: true,
-        transactionType: "normal",
-        transactionCategory: "Bill",
-        from: "",
-        to: "BANK001",
-      },
-      {
-        payeeName: "Himadri Purkait",
-        transactionDetail: "",
-        transactionPaymentType: "Online",
-        isInward: true,
-        transactionCategory: "Salary",
-        transactionName: "TCS - Salary Credited",
-        transactionType: "normal",
-        transactionStatus: "Completed",
-        transactionAmount: "49991",
-        transactionDate: "2025-11-28T00:00:00.000Z",
-        from: "",
-        to: "BANK001",
-      },
-      {
-        transactionPaymentType: "Online",
-        isInward: false,
-        transactionAmount: "809",
-        transactionCategory: "Shopping",
-        payeeName: "Himadri Purkait",
-        transactionName: "Shopping at Zudio",
-        transactionStatus: "Completed",
-        transactionDetail: "",
-        transactionType: "normal",
-        transactionDate: "2025-11-29T00:00:00.000Z",
-        from: "BANK001",
-        to: "",
-      },
-      {
-        transactionName: "Remaining Payment for Main Curtains",
-        transactionCategory: "Bill",
-        payeeName: "Himadri Purkait",
-        transactionPaymentType: "Online",
-        isInward: false,
-        transactionDetail: "",
-        transactionAmount: "7000",
-        transactionType: "normal",
-        transactionDate: "2025-11-29T00:00:00.000Z",
-        transactionStatus: "Completed",
-        from: "BANK001",
-        to: "",
-      },
-      {
-        transactionType: "normal",
-        transactionCategory: "Bill",
-        transactionName: "Remaining Payment for White Curatins",
-        transactionDate: "2025-11-30T00:00:00.000Z",
-        transactionDetail: "",
-        transactionAmount: "5000",
-        transactionStatus: "Completed",
-        isInward: false,
-        payeeName: "Himadri Purkait",
-        transactionPaymentType: "Online",
-        from: "BANK001",
-        to: "",
-      },
-      {
-        isInward: false,
-        transactionAmount: "10100",
-        transactionStatus: "Completed",
-        transactionType: "normal",
-        transactionPaymentType: "Online",
-        payeeName: "Himadri Purkait",
-        transactionName: "MISC - To Rupa Das ",
-        transactionCategory: "Bill",
-        transactionDate: "2025-11-30T00:00:00.000Z",
-        transactionDetail: "",
-        from: "BANK001",
-        to: "",
-      },
-      {
-        transactionDetail: "",
-        payeeName: "Himadri Purkait",
-        transactionAmount: "6317",
-        isInward: false,
-        transactionDate: "2025-12-01T00:00:00.000Z",
-        transactionCategory: "Bill",
-        transactionName: "MISC - Multiple Payments",
-        transactionStatus: "Completed",
-        transactionType: "normal",
-        transactionPaymentType: "Online",
-        from: "BANK001",
-        to: "",
-      },
-      {
-        transactionStatus: "Completed",
-        isInward: false,
-        payeeName: "Himadri Purkait",
-        transactionDate: "2025-12-03T00:00:00.000Z",
-        transactionCategory: "Bill",
-        transactionPaymentType: "Online",
-        transactionAmount: "2300",
-        transactionDetail: "",
-        transactionName: "MISC - Personal Use",
-        transactionType: "normal",
-        from: "BANK001",
-        to: "",
-      },
-      {
-        transactionStatus: "Completed",
-        isInward: false,
-        transactionDetail: "",
-        transactionPaymentType: "Online",
-        transactionDate: "2025-12-04T00:00:00.000Z",
-        payeeName: "Himadri Purkait",
-        transactionAmount: "115",
-        transactionCategory: "Entertainment",
-        transactionName: "MISC - Paid to Sayan Da",
-        transactionType: "normal",
-        from: "BANK001",
-        to: "",
-      },
-      {
-        transactionCategory: "Bill",
-        transactionStatus: "Completed",
-        transactionType: "normal",
-        payeeName: "Himadri Purkait",
-        transactionName: "Paid for Medicines for Purulia Trip",
-        isInward: false,
-        transactionDate: "2025-12-04T00:00:00.000Z",
-        transactionPaymentType: "Online",
-        transactionDetail: "",
-        transactionAmount: "343",
-        from: "BANK001",
-        to: "",
-      },
-      {
-        transactionPaymentType: "Online",
-        transactionDate: "2025-12-05T00:00:00.000Z",
-        transactionType: "normal",
-        transactionCategory: "Travel",
-        transactionName: "Transfer to Kotak Bank for Purulia Trip",
-        payeeName: "Himadri Purkait",
-        transactionStatus: "Completed",
-        transactionAmount: "10000",
-        isInward: false,
-        transactionDetail: "",
-        from: "BANK001",
-        to: "BANK002",
-      },
-      {
-        transactionDetail: "",
-        transactionStatus: "Completed",
-        transactionPaymentType: "Online",
-        transactionName: "For Kutchina Servicing",
-        payeeName: "Himadri Purkait",
-        transactionDate: "2025-12-13T00:00:00.000Z",
-        transactionType: "normal",
-        isInward: false,
-        transactionAmount: "1500",
-        transactionCategory: "Bill",
-        from: "BANK001",
-        to: "",
-      },
-      {
-        transactionAmount: "1000",
-        transactionDetail: "",
-        transactionCategory: "Bill",
-        transactionType: "normal",
-        transactionPaymentType: "Online",
-        payeeName: "Himadri Purkait",
-        isInward: false,
-        transactionName: "MISC - Personal Use",
-        transactionDate: "2025-12-24T00:00:00.000Z",
-        transactionStatus: "Completedc",
-        from: "BANK001",
-        to: "BANK002",
-      },
-    ];
-
-    const user = firebase.auth().currentUser;
-    if (includeToSplit) {
+  function checkPreparedness() {
+    if (
+      name?.length > 0 &&
+      fromBank?.code?.length > 0 &&
+      amount?.length > 0 &&
+      date?.length > 0 &&
+      category?.length > 0 &&
+      paymentType?.length > 0
+    ) {
+      return true;
     } else {
-      console.log("normal");
-      db.collection("userSpace")
-        .doc(user?.uid)
-        ?.collection("AllTransactionsSpace")
-        .doc("AllTransactions")
-        .set({
-          AllTransactions: temp,
-        });
+      return false;
     }
-    setShowAddTransactionModal(false);
   }
 
   function filterData() {
@@ -851,6 +393,90 @@ export default function AddSplitTransactionModal({
               <span className="text-[16px] font-[500]">{name}</span>
             </div>
           ))} */}
+            <div className="w-full flex justify-start items-center flex-wrap mt-[5px]">
+              {/* <div className="px-[10px] py-[3px] flex justify-center items-center text-[14px] rounded-md mr-[-5px] text-[#696969] mb-[5px] mt-[-10px] ml-[-5px]">
+                <HugeiconsIcon
+                  icon={ArrowMoveDownRightIcon}
+                  size={20}
+                  strokeWidth={2}
+                  className=""
+                />
+              </div> */}
+              <div className="p-[1px] flex justify-center items-center text-[14px] bg-gradient-to-br from-[#525252] via-[30%] via-[#383838] to-[#272727] rounded-md mr-[5px] mb-[5px]">
+                <div
+                  className="px-[10px] py-[3px] flex justify-center items-center text-[14px] bg-[#272727] rounded-[5px] text-[#9b9b9b]"
+                  onClick={(e) => {
+                    setName("TCS - Salary Credited");
+                    setCategory("Salary");
+                    setPaymentType("Online");
+                  }}
+                >
+                  Salary
+                </div>
+              </div>
+              <div className="p-[1px] flex justify-center items-center text-[14px] bg-gradient-to-br from-[#525252] via-[30%] via-[#383838] to-[#272727] rounded-md mr-[5px] text-[#d0d0d0] mb-[5px]">
+                <div
+                  className="px-[10px] py-[3px] flex justify-center items-center text-[14px] bg-[#272727] rounded-[5px] text-[#9b9b9b]"
+                  onClick={(e) => {
+                    setName("TCS - Lunch at Delta Park");
+                    setCategory("Food");
+                    setPaymentType("Online");
+                  }}
+                >
+                  Lunch
+                </div>
+              </div>
+              <div className="p-[1px] flex justify-center items-center text-[14px] bg-gradient-to-br from-[#525252] via-[30%] via-[#383838] to-[#272727] rounded-md mr-[5px] text-[#d0d0d0] mb-[5px]">
+                <div
+                  className="px-[10px] py-[3px] flex justify-center items-center text-[14px] bg-[#272727] rounded-[5px] text-[#9b9b9b]"
+                  onClick={(e) => {
+                    setName("UBER - Renewed Shuttle Package (Unlimited)");
+                    setCategory("Subscription");
+                    setPaymentType("Online");
+                  }}
+                >
+                  Shuttle Package
+                </div>
+              </div>
+              <div className="p-[1px] flex justify-center items-center text-[14px] bg-gradient-to-br from-[#7f2f2f] via-[30%] via-[#4e2828] to-[#3b1f1f] rounded-md mr-[5px] text-[#d0d0d0] mb-[5px]">
+                <div
+                  className="px-[10px] py-[3px] flex justify-center items-center text-[14px] bg-[#3b1f1f] rounded-[5px] text-[#e24a4a]"
+                  onClick={(e) => {
+                    setName("");
+                    setCategory("");
+                    setPaymentType("");
+                    setAmount("");
+                    setDate("");
+                    setDetail("");
+                  }}
+                >
+                  <HugeiconsIcon
+                    icon={Add01Icon}
+                    size={14}
+                    strokeWidth={2.5}
+                    className="mr-[6px] rotate-45"
+                  />
+                  Clear
+                </div>
+              </div>
+              <div className="p-[1px] flex justify-center items-center text-[14px] bg-gradient-to-br from-[#525252] via-[30%] via-[#383838] to-[#272727] rounded-md mr-[5px] mb-[5px]">
+                <div
+                  className="px-[6.5px] py-[6.5px] flex justify-center items-center text-[14px] bg-[#272727] rounded-[5px] text-[#9b9b9b]"
+                  onClick={(e) => {
+                    setName("TCS - Salary Credited");
+                    setCategory("Salary");
+                  }}
+                >
+                  <HugeiconsIcon
+                    icon={Add01Icon}
+                    size={14}
+                    strokeWidth={2.5}
+                    className="mr-[0px]"
+                  />
+                  {/* Add new */}
+                </div>
+              </div>
+            </div>
             {formFormat.map((row, rowIndex) => {
               return (
                 <>
@@ -901,6 +527,7 @@ export default function AddSplitTransactionModal({
                       </div>
                     </div>
                   )}
+
                   {row.length > 1 ? (
                     <div
                       key={rowIndex}
@@ -1130,125 +757,6 @@ export default function AddSplitTransactionModal({
                           );
                         })}
                       </div>
-                      {rowIndex == 0 && (
-                        <div className="w-full flex justify-start items-center flex-wrap mt-[5px]">
-                          <div className="px-[10px] py-[3px] flex justify-center items-center text-[14px] rounded-md mr-[-5px] text-[#696969] mb-[5px] mt-[-10px] ml-[-5px]">
-                            <HugeiconsIcon
-                              icon={ArrowMoveDownRightIcon}
-                              size={20}
-                              strokeWidth={2}
-                              className=""
-                            />
-                          </div>
-                          <div className="p-[1px] flex justify-center items-center text-[14px] bg-gradient-to-br from-[#525252] via-[30%] via-[#383838] to-[#272727] rounded-md mr-[5px] mb-[5px]">
-                            <div
-                              className="px-[10px] py-[3px] flex justify-center items-center text-[14px] bg-[#272727] rounded-[5px] text-[#9b9b9b]"
-                              onClick={(e) => {
-                                setName("TCS - Salary Credited");
-                                setCategory("Salary");
-                                setPaymentType("Online");
-                              }}
-                            >
-                              Salary
-                            </div>
-                          </div>
-
-                          {/* <div
-                            className="px-[10px] py-[3px] flex justify-center items-center text-[14px] bg-[#272727] rounded-md mr-[5px] text-[#d0d0d0] mb-[5px] border border-[#2c2c2c]"
-                            onClick={(e) => {
-                              setName("TCS - Salary Credited");
-                              setCategory("Salary");
-                            }}
-                          >
-                            Salary
-                          </div> */}
-                          <div className="p-[1px] flex justify-center items-center text-[14px] bg-gradient-to-br from-[#525252] via-[30%] via-[#383838] to-[#272727] rounded-md mr-[5px] text-[#d0d0d0] mb-[5px]">
-                            <div
-                              className="px-[10px] py-[3px] flex justify-center items-center text-[14px] bg-[#272727] rounded-[5px] text-[#9b9b9b]"
-                              onClick={(e) => {
-                                setName("TCS - Lunch at Delta Park");
-                                setCategory("Food");
-                                setPaymentType("Online");
-                              }}
-                            >
-                              Lunch
-                            </div>
-                          </div>
-                          {/* <div
-                            className="px-[10px] py-[3px] flex justify-center items-center text-[14px] bg-[#272727] rounded-md mr-[5px] text-[#d0d0d0] mb-[5px] border border-[#2c2c2c]"
-                            onClick={(e) => {
-                              setName("TCS - Lunch at Delta Park");
-                              setCategory("Food");
-                            }}
-                          >
-                            Lunch
-                          </div> */}
-                          <div className="p-[1px] flex justify-center items-center text-[14px] bg-gradient-to-br from-[#525252] via-[30%] via-[#383838] to-[#272727] rounded-md mr-[5px] text-[#d0d0d0] mb-[5px]">
-                            <div
-                              className="px-[10px] py-[3px] flex justify-center items-center text-[14px] bg-[#272727] rounded-[5px] text-[#9b9b9b]"
-                              onClick={(e) => {
-                                setName(
-                                  "UBER - Renewed Shuttle Package (Unlimited)"
-                                );
-                                setCategory("Subscription");
-                                setPaymentType("Online");
-                              }}
-                            >
-                              Shuttle Package
-                            </div>
-                          </div>
-
-                          {/* <div
-                            className="px-[10px] py-[3px] flex justify-center items-center text-[14px] bg-[#272727] rounded-md mr-[5px] text-[#d0d0d0] mb-[5px] border border-[#2c2c2c]"
-                            onClick={(e) => {
-                              setName(
-                                "UBER - Renewed Shuttle Package (Unlimited)"
-                              );
-                              setCategory("Subscription");
-                            }}
-                          >
-                            Shuttle Package
-                          </div> */}
-                          <div className="p-[1px] flex justify-center items-center text-[14px] bg-gradient-to-br from-[#7f2f2f] via-[30%] via-[#4e2828] to-[#3b1f1f] rounded-md mr-[5px] text-[#d0d0d0] mb-[5px]">
-                            <div
-                              className="px-[10px] py-[3px] flex justify-center items-center text-[14px] bg-[#3b1f1f] rounded-[5px] text-[#e24a4a]"
-                              onClick={(e) => {
-                                setName("");
-                                setCategory("");
-                                setPaymentType("");
-                                setAmount("");
-                                setDate("");
-                                setDetail("");
-                              }}
-                            >
-                              <HugeiconsIcon
-                                icon={Add01Icon}
-                                size={14}
-                                strokeWidth={2.5}
-                                className="mr-[6px] rotate-45"
-                              />
-                              Clear
-                            </div>
-                          </div>
-                          <div className="p-[1px] flex justify-center items-center text-[14px] bg-gradient-to-br from-[#525252] via-[30%] via-[#383838] to-[#272727] rounded-md mr-[5px] mb-[5px]">
-                            <div
-                              className="px-[6.5px] py-[6.5px] flex justify-center items-center text-[14px] bg-[#272727] rounded-[5px] text-[#9b9b9b]"
-                              onClick={(e) => {
-                                setName("TCS - Salary Credited");
-                                setCategory("Salary");
-                              }}
-                            >
-                              <HugeiconsIcon
-                                icon={Add01Icon}
-                                size={14}
-                                strokeWidth={2.5}
-                                className="mr-[0px]"
-                              />
-                              {/* Add new */}
-                            </div>
-                          </div>
-                        </div>
-                      )}
                     </>
                   )}
                 </>
@@ -1435,77 +943,21 @@ export default function AddSplitTransactionModal({
             ) : (
               <></>
             )}
-            <div
-              className="mt-[40px] rounded-lg w-full min-h-[40px] flex justify-center items-center font-[700] bg-[#fff] text-[#000] text-[14px]"
-              onClick={(e) => {
+          </div>
+          <div
+            className={
+              "mt-[0px] rounded-lg w-full min-h-[50px] flex justify-center items-center font-[700] bg-[#fff] text-[#000] text-[14px]" +
+              (checkPreparedness() ? " opacity-100" : " opacity-30")
+            }
+            onClick={(e) => {
+              if (checkPreparedness()) {
                 addTransaction();
-                // ff();
-              }}
-            >
-              Add Transaction
-            </div>
+              }
+              // ff();
+            }}
+          >
+            Add Transaction
           </div>
-
-          {/* {[
-          "Himadri Purkait",
-          "Jishu Sengupta",
-          "Ishika Ghosh",
-          "Anita Mukhejee",
-          "Swapnodip Singha Roy",
-        ].map((data, index) => {
-          return (
-            <div
-              className={
-                "w-[50px] h-[50px] rounded-full flex justify-center items-center uppercase font-extrabold cursor-pointer bg-[#212121] text-[#d5d5d5]"
-                // (data == selectedMember
-                //   ? " opacity-100"
-                //   : selectedMember.length == 0
-                //   ? " opacity-100"
-                //   : " opacity-30")
-              }
-              onClick={() => {
-                // setSelectedMember(data);
-              }}
-              style={
-                {
-                  // backgroundColor: `${colorScheme[index]?.background}`,
-                  // color: `${colorScheme[index]?.text}`,
-                  // border: `1.5px solid ${colorScheme[index]?.border}`,
-                }
-              }
-            >
-              {data.split(" ")[0].charAt(0)}
-              {data.split(" ").pop().charAt(0)}
-            </div>
-          );
-        })} */}
-          {/* <div className="w-full h-[20px] mt-[-60px] bg-gradient-to-b from-transparent to-[#1b1b1b]"></div>
-        <div className="w-full h-[40px] mt-[-0px] bg-[#1b1b1b] border-t border-[#383838] flex justify-center items-center px-[20px]">
-          <div className="w-full flex justify-between items-center mt-[18px] ">
-            <div className="">Include in split</div>
-            <div
-              className={
-                "w-[40px] h-[28px] rounded-full flex justify-start items-center  " +
-                (splitAmongAll ? " ml-[15px] bg-[#000000]" : " bg-[#000000]")
-              }
-              style={{ transition: ".3s" }}
-              onClick={(e) => {
-                e.stopPropagation();
-                setSplitAmongAll(!splitAmongAll);
-              }}
-            >
-              <div
-                className={
-                  "h-[22px] w-[22px] rounded-full  " +
-                  (splitAmongAll
-                    ? " ml-[15px] bg-[#87bd12]"
-                    : " ml-[3px] bg-[#2b2b2e]")
-                }
-                style={{ transition: ".3s" }}
-              ></div>
-            </div>
-          </div>
-        </div> */}
         </div>
       </div>
     </>

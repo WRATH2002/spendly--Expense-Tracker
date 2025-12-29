@@ -27,7 +27,7 @@ export default function DateInput({
 
   return (
     <div className="flex flex-col justify-start items-start text-[white] text-[14px]">
-      <label className="mb-[5px] text-[12px] text-[#ababab] font-[500]">
+      <label className="mb-[5px] ml-[12px] text-[12px] text-[#777777] font-[500]">
         {label} {isRequired ? "*" : ""}
       </label>
       <div className="w-full flex justify-start items-center">
