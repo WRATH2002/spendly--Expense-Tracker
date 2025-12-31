@@ -89,7 +89,7 @@ export default function AddSplitTransactionModal({
     [
       {
         label: "From Bank",
-        isRequired: true,
+        isRequired: false,
         placeholder: "",
         value: fromBank?.name,
         setValue: setFromBank,
@@ -97,7 +97,7 @@ export default function AddSplitTransactionModal({
         // hasRequirements: false,
         inputType: "text",
         inputComponent: "DropdownInput",
-        dropDownList: allBanksInfo?.groupedData?.Bank,
+        dropDownList: allBanksInfo?.bankDataArr,
         showDropdown: showDropdown,
         setShowDropdown: setShowDropdown,
         // requirementFunction: requirementOnlyNumber,
@@ -112,7 +112,7 @@ export default function AddSplitTransactionModal({
         // hasRequirements: false,
         inputType: "text",
         inputComponent: "DropdownInput",
-        dropDownList: allBanksInfo?.groupedData?.Wallet,
+        dropDownList: allBanksInfo?.bankDataArr,
         showDropdown: showDropdown,
         setShowDropdown: setShowDropdown,
         // requirementFunction: requirementOnlyNumber,
@@ -257,7 +257,7 @@ export default function AddSplitTransactionModal({
   function checkPreparedness() {
     if (
       name?.length > 0 &&
-      fromBank?.code?.length > 0 &&
+      (fromBank?.code?.length > 0 || toBank?.code?.length > 0) &&
       amount?.length > 0 &&
       date?.length > 0 &&
       category?.length > 0 &&

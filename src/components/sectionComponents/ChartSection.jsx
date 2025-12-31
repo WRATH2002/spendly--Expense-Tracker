@@ -34,6 +34,7 @@ import {
 import { hover } from "framer-motion";
 import { AnimatedNumber } from "../animations/AnimatedNumber";
 import TransactionChart from "../TransactionChart";
+import FullBankDetailModal from "../FullBankDetailModal";
 
 const options = ["Monthly", "Quarterly", "Yearly"];
 
@@ -253,10 +254,38 @@ export default function ChartSection({ allTransactions, allBanksInfo }) {
       totalRecieved: 0,
     };
 
-    console.log(
-      "SDF",
-      getBankWiseInfo(allTransactions, "2025-12-01", "2025-12-31")
-    );
+    // console.log(
+    //   "SDF",
+    //   getBankWiseInfo(allTransactions, "2025-12-01", "2025-12-31")
+    // );
+
+    bankInfoObjArr?.map((data, index) => {
+      bankInfoObjArr[index] = {
+        ...data,
+        fullInfo: getBankDetailedInfo(
+          transactions,
+          data?.bankInfo?.bankCode,
+          "",
+          ""
+        ),
+      };
+    });
+
+    console.log("Full Data -> ", {
+      banks: bankInfoObjArr?.filter((data) => data?.bankInfo?.type == "Bank"),
+      wallets: bankInfoObjArr?.filter(
+        (data) => data?.bankInfo?.type == "Wallet"
+      ),
+    });
+
+    // getBankDetailedInfo(
+    //   groupAndSortTransactions(allTransactions),
+    //   "BANK001",
+    //   "",
+    //   ""
+    // );
+
+    // getBankWiseInfo(groupAndSortTransactions(allTransactions), "", "");
 
     return {
       banks: bankInfoObjArr?.filter((data) => data?.bankInfo?.type == "Bank"),
@@ -266,87 +295,235 @@ export default function ChartSection({ allTransactions, allBanksInfo }) {
     };
   }
 
+  function getBankDetailedInfo(
+    allTransactionDetailArray,
+    bankCode,
+    startDate,
+    endDate
+  ) {
+    console.log(allTransactionDetailArray);
+    function getData(startDate, endDate) {
+      let allBanksWithInfo = {};
+      let fullInfo = {
+        totalIncome: 0,
+        totalExpense: 0,
+        totalExpenseExceptInternalTransfer: 0,
+        totalInternalTransfer: 0,
+        internalTransferMap: [],
+      };
+
+      allTransactionDetailArray?.forEach((data, index) => {
+        if (!data?.isGroup) {
+          if (data?.from == bankCode) {
+            fullInfo.totalExpense += Number(
+              parseFloat(data?.transactionAmount).toFixed(2)
+            );
+            if (data?.to?.length > 0) {
+              fullInfo.totalInternalTransfer += Number(
+                parseFloat(data?.transactionAmount).toFixed(2)
+              );
+              if (
+                fullInfo?.internalTransferMap?.find(
+                  (elem) => elem?.toBankCode == data?.to
+                )
+              ) {
+                console.log(parseFloat(data?.transactionAmount));
+                fullInfo.internalTransferMap[
+                  fullInfo?.internalTransferMap?.findIndex(
+                    (elem) => elem?.toBankCode == data?.to
+                  )
+                ].totalTransfered += Number(
+                  parseFloat(data?.transactionAmount).toFixed(2)
+                );
+                // fullInfo.internalTransferMap?.map((elem) => {
+                //   if (elem?.toBankCode == data?.to) {
+                //     elem = {
+                //       toBankName: "",
+                //       toBankCode: elem?.toBankCode,
+                //       totalTransfered:
+                //         elem?.totalTransfered +
+                //         Number(parseFloat(data?.transactionAmount).toFixed(2)),
+                //       totalRecieved: 0,
+                //     };
+                //     return elem;
+                //   } else {
+                //     return elem;
+                //   }
+                // });
+              } else {
+                fullInfo.internalTransferMap.push({
+                  toBankName: "",
+                  toBankCode: data?.to,
+                  totalTransfered: Number(
+                    parseFloat(data?.transactionAmount).toFixed(2)
+                  ),
+                  totalRecieved: 0,
+                });
+              }
+            }
+          } else if (data?.to == bankCode) {
+            fullInfo.totalIncome += Number(
+              parseFloat(data?.transactionAmount).toFixed(2)
+            );
+            if (data?.from?.length > 0) {
+              if (
+                fullInfo?.internalTransferMap?.find(
+                  (elem) => elem?.toBankCode == data?.from
+                )
+              ) {
+                fullInfo.internalTransferMap[
+                  fullInfo?.internalTransferMap?.findIndex(
+                    (elem) => elem?.toBankCode == data?.from
+                  )
+                ].totalRecieved += Number(
+                  parseFloat(data?.transactionAmount).toFixed(2)
+                );
+              } else {
+                fullInfo.internalTransferMap.push({
+                  toBankName: "",
+                  toBankCode: data?.from,
+                  totalTransfered: 0,
+                  totalRecieved: Number(
+                    parseFloat(data?.transactionAmount).toFixed(2)
+                  ),
+                });
+              }
+            }
+          }
+        }
+      });
+
+      fullInfo.totalExpenseExceptInternalTransfer = Number(
+        (fullInfo?.totalExpense - fullInfo?.totalInternalTransfer).toFixed(2)
+      );
+
+      console.log("fullInfo", fullInfo);
+      return fullInfo;
+      //   console.clear();
+      //   console.log("", allBanksWithInfo);
+
+      //   let objToArr = [];
+
+      //   Object.entries(allBanksWithInfo).forEach(([key, value]) => {
+      //     console.log("key:", key, "value:", value);
+      //     objToArr.push(value);
+      //   });
+
+      //   return objToArr;
+    }
+
+    if (startDate?.length == 0 && endDate?.length == 0) {
+      return getData(
+        new Date("2010-01-01").toISOString(),
+        new Date().toISOString()
+      );
+    } else if (startDate?.length == 0 && endDate?.length > 0) {
+      return getData(
+        new Date(startDate).toISOString(),
+        new Date().toISOString()
+      );
+    } else if (startDate?.length > 0 && endDate?.length == 0) {
+      return getData(
+        new Date("2010-01-01").toISOString(),
+        new Date(endDate).toISOString()
+      );
+    } else if (startDate?.length > 0 && endDate?.length > 0) {
+      return getData(
+        new Date(startDate).toISOString(),
+        new Date(endDate).toISOString()
+      );
+    }
+  }
+
   return (
     <>
       <div class="absolute inset-0 noise pointer-events-none"></div>
       <div className="grad rounded-t-full blur-[200px] w-full h-[200px] fixed left-0 bottom-[0px] -z-[0]"></div>
-      <div className="w-full h-full flex flex-col justify-start items-center overflow-y-scroll bg-[#00000000] p-[15px] text-[#D4D4D4] font-[geist] z-0 ">
-        <div className="w-full flex flex-col justify-start items-start p-[10px]">
-          <div className="w-full flex flex-col justify-start items-start bg-[#ffffff12] rounded-xl p-[15px] px-[20px] font-[geist]">
-            <div className="w-full flex justify-between items-center text-[12px] text-[#606060]">
-              <div className="font-[500]">My Banks</div>
-              {/* <div>See All</div> */}
-            </div>
-            <div className="w-full border-t border-[#202020] my-[15px]"></div>
-
-            {getBankFullDetailsWithInfo(
+      {true ? (
+        <FullBankDetailModal />
+      ) : (
+        <div className="w-full h-full flex flex-col justify-start items-center overflow-y-scroll bg-[#00000000] p-[15px] text-[#D4D4D4] font-[geist] z-0 ">
+          <div className="w-full flex flex-col justify-start items-start p-[10px]">
+            <div className="w-full flex flex-col justify-start items-start bg-[#ffffff12] rounded-xl p-[15px] px-[20px] font-[geist]">
+              <div className="w-full flex justify-between items-center text-[12px] text-[#606060]">
+                <div className="font-[500]">My Banks</div>
+                {/* <div>See All</div> */}
+              </div>
+              <div className="w-full border-t border-[#202020] my-[15px]"></div>
+              {/* {getBankDetailedInfo(
               groupAndSortTransactions(allTransactions),
-              allBanksInfo
-            )?.banks?.map((data, index) => {
-              return (
-                <>
-                  <div
-                    className={
-                      "w-full border-t border-[#202020] my-[15px]" +
-                      (index != 0 ? " visible" : " hidden")
-                    }
-                  ></div>
-                  <div
-                    className="w-full flex justify-start items-start"
-                    key={index}
-                  >
-                    <div className="min-w-[40px] h-[40px] mr-[20px] rounded-md flex justify-center items-center bg-[#ffffff12] text-[#999999] mt-[4px] ">
-                      <HugeiconsIcon
-                        icon={BankIcon}
-                        size={18}
-                        strokeWidth={2}
-                        className=""
-                      />
-                    </div>
-                    <div className="w-full flex flex-col justify-start items-start ">
-                      <div className="font-[600]">
-                        {data?.bankInfo?.bankName}
+              "BANK001",
+              "",
+              ""
+            )} */}
+              {getBankFullDetailsWithInfo(
+                groupAndSortTransactions(allTransactions),
+                allBanksInfo
+              )?.banks?.map((data, index) => {
+                return (
+                  <>
+                    <div
+                      className={
+                        "w-full border-t border-[#202020] my-[15px]" +
+                        (index != 0 ? " visible" : " hidden")
+                      }
+                    ></div>
+                    <div
+                      className="w-full flex justify-start items-start"
+                      key={index}
+                    >
+                      <div className="min-w-[40px] h-[40px] mr-[20px] rounded-md flex justify-center items-center bg-[#ffffff12] text-[#999999] mt-[4px] ">
+                        <HugeiconsIcon
+                          icon={BankIcon}
+                          size={18}
+                          strokeWidth={2}
+                          className=""
+                        />
                       </div>
-                      <div className="text-[12px] text-[#676767] mt-[5px]">
-                        This month expense
-                      </div>
-                      <div className="w-full flex justify-start items-center text-[14px] text-[#a8a8a8] font-[500] ">
-                        <span className="mr-[5px]">₹</span>
-                        {formatAmount(data?.quickInfo?.thisMonth)}
-                      </div>
-                      <div
-                        className={
-                          "px-[6px] py-[1px] rounded-md bg-[#69e90013] border border-[#69e90006] text-[#5ddd02c5] text-[10px] mt-[10px] flex justify-center items-center" +
-                          (data?.bankInfo?.isPrimary ? " visible" : " hidden")
-                        }
-                      >
-                        {/* <HugeiconsIcon
+                      <div className="w-full flex flex-col justify-start items-start ">
+                        <div className="font-[600]">
+                          {data?.bankInfo?.bankName}
+                        </div>
+                        <div className="text-[12px] text-[#676767] mt-[5px]">
+                          This month expense
+                        </div>
+                        <div className="w-full flex justify-start items-center text-[14px] text-[#a8a8a8] font-[500] ">
+                          <span className="mr-[5px]">₹</span>
+                          {formatAmount(data?.quickInfo?.thisMonth)}
+                        </div>
+                        <div
+                          className={
+                            "px-[6px] py-[1px] rounded-md bg-[#69e90013] border border-[#69e90006] text-[#5ddd02c5] text-[10px] mt-[10px] flex justify-center items-center" +
+                            (data?.bankInfo?.isPrimary ? " visible" : " hidden")
+                          }
+                        >
+                          {/* <HugeiconsIcon
                           icon={CircleIcon}
                           size={5}
                           strokeWidth={1}
                           fill="currentColor"
                           className="mr-[5px]"
                         />{" "} */}
-                        <span class="relative flex h-[5px] w-[5px] mr-[5px]">
-                          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#5ddd02c5] opacity-75"></span>
-                          <span class="relative inline-flex rounded-full h-[5px] w-[5px] bg-[#5ddd02c5]"></span>
-                        </span>
-                        Primary
+                          <span class="relative flex h-[5px] w-[5px] mr-[5px]">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#5ddd02c5] opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-[5px] w-[5px] bg-[#5ddd02c5]"></span>
+                          </span>
+                          Primary
+                        </div>
+                      </div>
+                      <div className="mt-auto mb-auto">
+                        <HugeiconsIcon
+                          icon={ArrowRight01Icon}
+                          size={18}
+                          strokeWidth={2}
+                          className=""
+                        />
                       </div>
                     </div>
-                    <div className="mt-auto mb-auto">
-                      <HugeiconsIcon
-                        icon={ArrowRight01Icon}
-                        size={18}
-                        strokeWidth={2}
-                        className=""
-                      />
-                    </div>
-                  </div>
-                </>
-              );
-            })}
-            {/* <div className="w-full flex justify-start items-start">
+                  </>
+                );
+              })}
+              {/* <div className="w-full flex justify-start items-start">
               <div></div>
               <div className="w-full flex flex-col justify-start items-start ">
                 <div className="font-[600]">HDFC Bank</div>
@@ -377,82 +554,82 @@ export default function ChartSection({ allTransactions, allBanksInfo }) {
               </div>
               <div></div>
             </div> */}
-          </div>
-          <div className="w-full flex flex-col justify-start items-start bg-[#ffffff12] rounded-xl p-[15px] px-[20px] font-[geist] mt-[20px]">
-            <div className="w-full flex justify-between items-center text-[12px] text-[#606060]">
-              <div className="font-[500]">My Wallets</div>
-              {/* <div>See All</div> */}
             </div>
-            <div className="w-full border-t border-[#202020] my-[15px]"></div>
+            <div className="w-full flex flex-col justify-start items-start bg-[#ffffff12] rounded-xl p-[15px] px-[20px] font-[geist] mt-[20px]">
+              <div className="w-full flex justify-between items-center text-[12px] text-[#606060]">
+                <div className="font-[500]">My Wallets</div>
+                {/* <div>See All</div> */}
+              </div>
+              <div className="w-full border-t border-[#202020] my-[15px]"></div>
 
-            {getBankFullDetailsWithInfo(
-              groupAndSortTransactions(allTransactions),
-              allBanksInfo
-            )?.wallets?.map((data, index) => {
-              return (
-                <>
-                  <div
-                    className={
-                      "w-full border-t border-[#202020] my-[15px]" +
-                      (index != 0 ? " visible" : " hidden")
-                    }
-                  ></div>
-                  <div
-                    className="w-full flex justify-start items-start"
-                    key={index}
-                  >
-                    <div className="min-w-[40px] h-[40px] mr-[20px] rounded-md flex justify-center items-center bg-[#ffffff12] text-[#999999] mt-[4px] ">
-                      <HugeiconsIcon
-                        icon={Wallet05Icon}
-                        size={18}
-                        strokeWidth={2}
-                        className=""
-                      />
-                    </div>
-                    <div className="w-full flex flex-col justify-start items-start ">
-                      <div className="font-[600]">
-                        {data?.bankInfo?.bankName}
+              {getBankFullDetailsWithInfo(
+                groupAndSortTransactions(allTransactions),
+                allBanksInfo
+              )?.wallets?.map((data, index) => {
+                return (
+                  <>
+                    <div
+                      className={
+                        "w-full border-t border-[#202020] my-[15px]" +
+                        (index != 0 ? " visible" : " hidden")
+                      }
+                    ></div>
+                    <div
+                      className="w-full flex justify-start items-start"
+                      key={index}
+                    >
+                      <div className="min-w-[40px] h-[40px] mr-[20px] rounded-md flex justify-center items-center bg-[#ffffff12] text-[#999999] mt-[4px] ">
+                        <HugeiconsIcon
+                          icon={Wallet05Icon}
+                          size={18}
+                          strokeWidth={2}
+                          className=""
+                        />
                       </div>
-                      <div className="text-[12px] text-[#676767] mt-[5px]">
-                        This month expense
-                      </div>
-                      <div className="w-full flex justify-start items-center text-[14px] text-[#a8a8a8] font-[500] ">
-                        <span className="mr-[5px]">₹</span>
-                        {formatAmount(data?.quickInfo?.thisMonth)}
-                      </div>
-                      <div
-                        className={
-                          "px-[6px] py-[1px] rounded-md bg-[#69e90013] border border-[#69e90006] text-[#5ddd02c5] text-[10px] mt-[10px] flex justify-center items-center" +
-                          (data?.bankInfo?.isPrimary ? " visible" : " hidden")
-                        }
-                      >
-                        {/* <HugeiconsIcon
+                      <div className="w-full flex flex-col justify-start items-start ">
+                        <div className="font-[600]">
+                          {data?.bankInfo?.bankName}
+                        </div>
+                        <div className="text-[12px] text-[#676767] mt-[5px]">
+                          This month expense
+                        </div>
+                        <div className="w-full flex justify-start items-center text-[14px] text-[#a8a8a8] font-[500] ">
+                          <span className="mr-[5px]">₹</span>
+                          {formatAmount(data?.quickInfo?.thisMonth)}
+                        </div>
+                        <div
+                          className={
+                            "px-[6px] py-[1px] rounded-md bg-[#69e90013] border border-[#69e90006] text-[#5ddd02c5] text-[10px] mt-[10px] flex justify-center items-center" +
+                            (data?.bankInfo?.isPrimary ? " visible" : " hidden")
+                          }
+                        >
+                          {/* <HugeiconsIcon
                           icon={CircleIcon}
                           size={5}
                           strokeWidth={1}
                           fill="currentColor"
                           className="mr-[5px]"
                         />{" "} */}
-                        <span class="relative flex h-[5px] w-[5px] mr-[5px]">
-                          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#5ddd02c5] opacity-75"></span>
-                          <span class="relative inline-flex rounded-full h-[5px] w-[5px] bg-[#5ddd02c5]"></span>
-                        </span>
-                        Primary
+                          <span class="relative flex h-[5px] w-[5px] mr-[5px]">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#5ddd02c5] opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-[5px] w-[5px] bg-[#5ddd02c5]"></span>
+                          </span>
+                          Primary
+                        </div>
+                      </div>
+                      <div className="mt-auto mb-auto">
+                        <HugeiconsIcon
+                          icon={ArrowRight01Icon}
+                          size={18}
+                          strokeWidth={2}
+                          className=""
+                        />
                       </div>
                     </div>
-                    <div className="mt-auto mb-auto">
-                      <HugeiconsIcon
-                        icon={ArrowRight01Icon}
-                        size={18}
-                        strokeWidth={2}
-                        className=""
-                      />
-                    </div>
-                  </div>
-                </>
-              );
-            })}
-            {/* <div className="w-full flex justify-start items-start">
+                  </>
+                );
+              })}
+              {/* <div className="w-full flex justify-start items-start">
               <div></div>
               <div className="w-full flex flex-col justify-start items-start ">
                 <div className="font-[600]">HDFC Bank</div>
@@ -483,14 +660,14 @@ export default function ChartSection({ allTransactions, allBanksInfo }) {
               </div>
               <div></div>
             </div> */}
+            </div>
+
+            {/* <TransactionChart transactions={sampleTransactions} /> */}
+
+            {/* <div className="w-[calc(100%+50px)] ml-[-25px] flex justify-between items-center font-[im] h-[40px] my-[20px] text-[14px] bg-[repeating-linear-gradient(-45deg,#202020_0_1px,transparent_2px_5px)]"></div> */}
           </div>
-
-          {/* <TransactionChart transactions={sampleTransactions} /> */}
-
-          {/* <div className="w-[calc(100%+50px)] ml-[-25px] flex justify-between items-center font-[im] h-[40px] my-[20px] text-[14px] bg-[repeating-linear-gradient(-45deg,#202020_0_1px,transparent_2px_5px)]"></div> */}
-        </div>
-        {/* <div className="w-full flex flex-col justify-center items-center font-[ieb] text-[30px] bg-[#1C1C1E] rounded-3xl p-[25px] mb-[10px]"></div> */}
-        {/* <div className="w-full flex flex-col justify-center items-center font-[ieb] text-[30px] bg-[#1C1C1E] rounded-3xl p-[25px] mb-[10px] mt-[50px]">
+          {/* <div className="w-full flex flex-col justify-center items-center font-[ieb] text-[30px] bg-[#1C1C1E] rounded-3xl p-[25px] mb-[10px]"></div> */}
+          {/* <div className="w-full flex flex-col justify-center items-center font-[ieb] text-[30px] bg-[#1C1C1E] rounded-3xl p-[25px] mb-[10px] mt-[50px]">
         <div className="w-full flex flex-col justify-start items-start">
           <div className="flex justify-between items-center font-[ir] mb-[20px]">
             <div className="text-[#797979] text-[16px] flex justify-start items-center ">
@@ -735,7 +912,8 @@ export default function ChartSection({ allTransactions, allBanksInfo }) {
           </div>
         </div>
       </div> */}
-      </div>
+        </div>
+      )}
     </>
   );
 }

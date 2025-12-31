@@ -56,6 +56,7 @@ function App() {
             path="/user/welcomeUser/user"
             element={<ContentContainer theme={theme} />}
           />
+          {/* <Route path="/user/welcomeUser/user?/bankInfo" element={<Signup />} /> */}
           {/* <Route path="/admin" element={<AdminPage />} />
           <Route path="/shared" element={<SharedChat />} />
           <Route path="/shared/login" element={<SharedLogin />} /> */}

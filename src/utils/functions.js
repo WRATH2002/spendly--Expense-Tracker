@@ -800,6 +800,8 @@ function getBankWiseInfo(allTransactionDetailArray, startDate, endDate) {
       objToArr.push(value);
     });
 
+    console.log(objToArr);
+
     return objToArr;
   }
 

@@ -211,10 +211,18 @@ export default function ContentContainer(props) {
         }
       });
 
-      console.log("ffffff->", grouped);
+      console.log("ffffff->", snapshot?.data()?.AllBanks);
 
       setAllBanksInfo({
-        bankDataArr: snapshot?.data()?.AllBanks,
+        bankDataArr: snapshot?.data()?.AllBanks?.reduce((acc, data) => {
+          acc.push({
+            name: data?.bankName,
+            code: data?.code,
+            deleteFlag: data?.deleteFlag,
+            type: data?.type,
+          });
+          return acc;
+        }, []),
         bankDataObj: BankObj,
         activeBankCode: snapshot?.data()?.activeBankCode,
         groupedData: grouped,
