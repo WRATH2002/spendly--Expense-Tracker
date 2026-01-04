@@ -57,6 +57,7 @@ import NewInputFields from "./NewInputFields";
 import SplitContainer from "./SplitContainer";
 import AddSplitTransactionModal from "./AddSplitTransactionModal";
 import { Toaster } from "react-hot-toast";
+import DI from "./DI";
 
 const getColor = (value) => {
   // if (value < 40) return "#D25340"; // red
@@ -211,7 +212,7 @@ export default function ContentContainer(props) {
         }
       });
 
-      console.log("ffffff->", snapshot?.data()?.AllBanks);
+      console.log("ffffff->", BankObj);
 
       setAllBanksInfo({
         bankDataArr: snapshot?.data()?.AllBanks?.reduce((acc, data) => {
@@ -558,88 +559,89 @@ export default function ContentContainer(props) {
   }
 
   return (
-    <div className="w-full h-[100svh] overflow-hidden flex flex-col justify-start items-start bg-[#000000] ">
-      {activeSection === "home" ? (
-        <div className="w-full h-full flex flex-col justify-start items-start">
-          <HomeSection
-            showDateWiseGrouped={accountInfo?.showDateWiseGrouped}
-            allTransactions={allTransactions}
-          />
-        </div>
-      ) : activeSection === "chart" ? (
-        <div className="w-full h-full flex flex-col justify-start items-start">
-          <ChartSection
-            allTransactions={allTransactions}
-            allBanksInfo={allBanksInfo}
-          />
-        </div>
-      ) : activeSection === "settings" ? (
-        <>
-          <SettingsSection accountInfo={accountInfo} />
-        </>
-      ) : activeSection === "split" ? (
-        <>
-          <SplitContainer
-            accountInfo={accountInfo}
+    <>
+      <div className="w-full h-[100svh] overflow-hidden flex flex-col justify-start items-start bg-[#000000] ">
+        {activeSection === "home" ? (
+          <div className="w-full h-full flex flex-col justify-start items-start">
+            <HomeSection
+              showDateWiseGrouped={accountInfo?.showDateWiseGrouped}
+              allTransactions={allTransactions}
+              allBanksInfo={allBanksInfo}
+            />
+          </div>
+        ) : activeSection === "chart" ? (
+          <div className="w-full h-full flex flex-col justify-start items-start">
+            <ChartSection
+              allTransactions={allTransactions}
+              allBanksInfo={allBanksInfo}
+            />
+          </div>
+        ) : activeSection === "settings" ? (
+          <>
+            <SettingsSection accountInfo={accountInfo} />
+          </>
+        ) : activeSection === "split" ? (
+          <>
+            <SplitContainer
+              accountInfo={accountInfo}
+              activeSplitSpace={activeSplitSpace}
+              setActiveSplitSpace={setActiveSplitSpace}
+              allSpaceArray={allSpaceArray}
+              setAllSpaceArray={setAllSpaceArray}
+              allSpaceInfo={allSpaceInfo}
+              setAllSpaceInfo={setAllSpaceInfo}
+              allSpaceInfoTemp={allSpaceInfoTemp}
+              setAllSpaceInfoTemp={setAllSpaceInfoTemp}
+            />
+          </>
+        ) : (
+          <></>
+        )}
+        <Toaster position="top-center" reverseOrder={false} />
+
+        <div className="w-full h-[70px] fixed bottom-0 left-0 z-[60] flex justify-center items-center">
+          <BottomNavbar
+            activeSection={activeSection}
+            setActiveSection={setActiveSection}
+            showAddTransactionModal={setShowAddTransactionModal}
+            setShowAddTransactionModal={setShowAddTransactionModal}
             activeSplitSpace={activeSplitSpace}
             setActiveSplitSpace={setActiveSplitSpace}
-            allSpaceArray={allSpaceArray}
-            setAllSpaceArray={setAllSpaceArray}
-            allSpaceInfo={allSpaceInfo}
-            setAllSpaceInfo={setAllSpaceInfo}
+            // allSpaceArray={allSpaceArray}
+            // setAllSpaceArray={setAllSpaceArray}
+            // allSpaceInfo={allSpaceInfo}
+            // setAllSpaceInfo={setAllSpaceInfo}
             allSpaceInfoTemp={allSpaceInfoTemp}
             setAllSpaceInfoTemp={setAllSpaceInfoTemp}
           />
-        </>
-      ) : (
-        <></>
-      )}
-      <Toaster position="top-center" reverseOrder={false} />
+        </div>
 
-      <div className="w-full h-[70px] fixed bottom-0 left-0 z-[60] flex justify-center items-center">
-        <BottomNavbar
-          activeSection={activeSection}
-          setActiveSection={setActiveSection}
-          showAddTransactionModal={setShowAddTransactionModal}
-          setShowAddTransactionModal={setShowAddTransactionModal}
-          activeSplitSpace={activeSplitSpace}
-          setActiveSplitSpace={setActiveSplitSpace}
-          // allSpaceArray={allSpaceArray}
-          // setAllSpaceArray={setAllSpaceArray}
-          // allSpaceInfo={allSpaceInfo}
-          // setAllSpaceInfo={setAllSpaceInfo}
-          allSpaceInfoTemp={allSpaceInfoTemp}
-          setAllSpaceInfoTemp={setAllSpaceInfoTemp}
-        />
+        <div
+          className={
+            "w-full h-[100svh] fixed top-0 left-0 bg-[#00000035] backdrop-blur-[6px]" +
+            (showAddTransactionModal
+              ? " opacity-100 z-[10]"
+              : " opacity-0 -z-[10]")
+          }
+          style={{ transition: ".2s" }}
+        ></div>
+        {showAddTransactionModal && (
+          <AddSplitTransactionModal
+            setShowAddTransactionModal={setShowAddTransactionModal}
+            activeSplitSpace={activeSplitSpace}
+            setActiveSplitSpace={setActiveSplitSpace}
+            activeSection={activeSection}
+            allSpaceInfoTemp={allSpaceInfoTemp}
+            setAllSpaceInfoTemp={setAllSpaceInfoTemp}
+            accountInfo={accountInfo}
+            setFromBank={setFromBank}
+            fromBank={fromBank}
+            toBank={toBank}
+            setToBank={setToBank}
+            allBanksInfo={allBanksInfo}
+          />
+        )}
       </div>
-
-      <div
-        className={
-          "w-full h-[100svh] fixed top-0 left-0 bg-[#00000035] backdrop-blur-[6px]" +
-          (showAddTransactionModal
-            ? " opacity-100 z-[10]"
-            : " opacity-0 -z-[10]")
-        }
-        style={{ transition: ".2s" }}
-      ></div>
-      {showAddTransactionModal && (
-        <AddSplitTransactionModal
-          setShowAddTransactionModal={setShowAddTransactionModal}
-          activeSplitSpace={activeSplitSpace}
-          setActiveSplitSpace={setActiveSplitSpace}
-          activeSection={activeSection}
-          allSpaceInfoTemp={allSpaceInfoTemp}
-          setAllSpaceInfoTemp={setAllSpaceInfoTemp}
-          accountInfo={accountInfo}
-          setFromBank={setFromBank}
-          fromBank={fromBank}
-          toBank={toBank}
-          setToBank={setToBank}
-          allBanksInfo={allBanksInfo}
-        />
-      )}
-
-      {/* ---- For showing image */}
-    </div>
+    </>
   );
 }

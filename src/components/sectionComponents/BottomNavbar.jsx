@@ -27,7 +27,7 @@ export default function BottomNavbar({
   setAllSpaceInfoTemp,
 }) {
   return (
-    <div className="w-[250px] h-[50px] rounded-full flex flex-col justify-center items-center text-[#858585] bg-[#8f8f8f2f]  z-[60] backdrop-blur-lg ">
+    <div className="w-[250px] h-[50px] rounded-full flex flex-col justify-center items-center text-[#858585] bg-[#8f8f8f2f]  z-[60] backdrop-blur-lg drop-shadow-xl ">
       <div className="w-full h-full flex justify-evenly items-center border border-[#8f8f8f18] rounded-full z-[70]">
         <HugeiconsIcon
           icon={Home02Icon}
@@ -110,7 +110,7 @@ export default function BottomNavbar({
       <div className="w-full h-full flex justify-start items-center border border-[#8f8f8f00] rounded-full mt-[-50px] py-[5px] px-[5px] ">
         <div
           className={
-            "h-full w-[calc(100%/5)] bg-[#ffffff2f] rounded-full border border-[#ffffff12] " +
+            "h-full w-[calc(100%/5)] bg-[#ffffff2f] rounded-full border border-[#ffffff12] drop-shadow-xl" +
             (activeSection == "home"
               ? " ml-[calc((100%/5)*0)]"
               : activeSection == "chart"

@@ -439,7 +439,7 @@ export default function ChartSection({ allTransactions, allBanksInfo }) {
     <>
       <div class="absolute inset-0 noise pointer-events-none"></div>
       <div className="grad rounded-t-full blur-[200px] w-full h-[200px] fixed left-0 bottom-[0px] -z-[0]"></div>
-      {true ? (
+      {!true ? (
         <FullBankDetailModal />
       ) : (
         <div className="w-full h-full flex flex-col justify-start items-center overflow-y-scroll bg-[#00000000] p-[15px] text-[#D4D4D4] font-[geist] z-0 ">

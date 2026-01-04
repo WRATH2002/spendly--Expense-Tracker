@@ -48,6 +48,7 @@ import { colorCode, creamyCoolColors, monthName } from "../../utils/constants";
 import TransactionBlock from "../TransactionBlock";
 import CountUp from "../animations/CountUp";
 import ShowTransactionInfo from "../ShowTransactionInfo";
+import DI from "../DI";
 
 const getColor = (value) => {
   if (value < 45) return "#7ED957"; // green color -> creamy
@@ -389,6 +390,172 @@ export default function HomeSection(props) {
     }).format(amount);
   }
 
+  function getBankDetailedInfo(
+    allTransactionDetailArray,
+    bankCode,
+    startDate,
+    endDate
+  ) {
+    //  console.log(allTransactionDetailArray);
+    function getData(startDate, endDate) {
+      let allBanksWithInfo = {};
+      let fullInfo = {
+        totalIncome: 0,
+        totalExpense: 0,
+        totalExpenseExceptInternalTransfer: 0,
+        totalInternalTransfer: 0,
+        internalTransferMap: [],
+      };
+
+      allTransactionDetailArray?.forEach((data, index) => {
+        if (!data?.isGroup) {
+          if (data?.from == bankCode) {
+            fullInfo.totalExpense += Number(
+              parseFloat(data?.transactionAmount).toFixed(2)
+            );
+            if (data?.to?.length > 0) {
+              fullInfo.totalInternalTransfer += Number(
+                parseFloat(data?.transactionAmount).toFixed(2)
+              );
+              if (
+                fullInfo?.internalTransferMap?.find(
+                  (elem) => elem?.toBankCode == data?.to
+                )
+              ) {
+                console.log(parseFloat(data?.transactionAmount));
+                fullInfo.internalTransferMap[
+                  fullInfo?.internalTransferMap?.findIndex(
+                    (elem) => elem?.toBankCode == data?.to
+                  )
+                ].totalTransfered += Number(
+                  parseFloat(data?.transactionAmount).toFixed(2)
+                );
+              } else {
+                fullInfo.internalTransferMap.push({
+                  toBankName: "",
+                  toBankCode: data?.to,
+                  totalTransfered: Number(
+                    parseFloat(data?.transactionAmount).toFixed(2)
+                  ),
+                  totalRecieved: 0,
+                });
+              }
+            }
+          } else if (data?.to == bankCode) {
+            fullInfo.totalIncome += Number(
+              parseFloat(data?.transactionAmount).toFixed(2)
+            );
+            if (data?.from?.length > 0) {
+              if (
+                fullInfo?.internalTransferMap?.find(
+                  (elem) => elem?.toBankCode == data?.from
+                )
+              ) {
+                fullInfo.internalTransferMap[
+                  fullInfo?.internalTransferMap?.findIndex(
+                    (elem) => elem?.toBankCode == data?.from
+                  )
+                ].totalRecieved += Number(
+                  parseFloat(data?.transactionAmount).toFixed(2)
+                );
+              } else {
+                fullInfo.internalTransferMap.push({
+                  toBankName: "",
+                  toBankCode: data?.from,
+                  totalTransfered: 0,
+                  totalRecieved: Number(
+                    parseFloat(data?.transactionAmount).toFixed(2)
+                  ),
+                });
+              }
+            }
+          }
+        }
+      });
+
+      fullInfo.totalExpenseExceptInternalTransfer = Number(
+        (fullInfo?.totalExpense - fullInfo?.totalInternalTransfer).toFixed(2)
+      );
+
+      console.log("fullInfo", fullInfo);
+      return fullInfo;
+    }
+
+    if (startDate?.length == 0 && endDate?.length == 0) {
+      return getData(
+        new Date("2010-01-01").toISOString(),
+        new Date().toISOString()
+      );
+    } else if (startDate?.length == 0 && endDate?.length > 0) {
+      return getData(
+        new Date(startDate).toISOString(),
+        new Date().toISOString()
+      );
+    } else if (startDate?.length > 0 && endDate?.length == 0) {
+      return getData(
+        new Date("2010-01-01").toISOString(),
+        new Date(endDate).toISOString()
+      );
+    } else if (startDate?.length > 0 && endDate?.length > 0) {
+      return getData(
+        new Date(startDate).toISOString(),
+        new Date(endDate).toISOString()
+      );
+    }
+  }
+
+  // ---- This function returns a object with 4 attributes ->
+  // .... totalExpenseForTheMonth
+  // .... totalExpenseForThePreviousMonth
+  // .... percentageChangeBetweenTwoMonths
+  // .... totalTransactionsForTheMonth
+  function geTotalExpenseForTheMonth(allTransactions, monthIndex, year) {
+    let totalExpenseForTheMonth = 0;
+    let totalExpenseForThePreviousMonth = 0;
+    let totalTransactionsForTheMonth = 0;
+    allTransactions?.forEach((data, index) => {
+      if (!data?.isGroup) {
+        if (
+          parseInt(data?.transactionDate?.split("-")[1]) ==
+            parseInt(monthIndex) + 1 &&
+          parseInt(data?.transactionDate?.split("-")[0]) == parseInt(year)
+        ) {
+          totalExpenseForTheMonth += parseFloat(data?.transactionAmount);
+          totalTransactionsForTheMonth += 1;
+        }
+      }
+    });
+
+    console.log(
+      "mdmdmd",
+      getBankDetailedInfo(allTransactions, "BANK001", "", "")
+    );
+    console.log(
+      "mdmdmd",
+      getBankDetailedInfo(allTransactions, "BANK002", "", "")
+    );
+    console.log(
+      "mdmdmd",
+      getBankDetailedInfo(allTransactions, "BANK003", "", "")
+    );
+
+    console.log("Total Expense for the Month => ", {
+      totalExpenseForTheMonth,
+      totalExpenseForThePreviousMonth,
+      percentageChangeBetweenTwoMonths: 0,
+      totalTransactionsForTheMonth,
+    });
+
+    // return {
+    //   totalExpenseForTheMonth,
+    //   totalExpenseForThePreviousMonth,
+    //   percentageChangeBetweenTwoMonths: 0,
+    //   totalTransactionsForTheMonth,
+    // };
+  }
+
+  const [selectedData, setSelectedData] = useState({});
+
   return (
     <>
       <div class="absolute inset-0 noise pointer-events-none"></div>
@@ -397,6 +564,11 @@ export default function HomeSection(props) {
       {/* <div className="bg-gradient-to-t from-[#03e5e9] to-[50%] to-[#007e80] rounded-full blur-3xl min-w-[100px] min-h-[100px] fixed left-[20px] top-[100px] -z-[0]"></div> */}
       {showContent ? (
         <div className="w-full h-[100svh] flex flex-col justify-start items-center overflow-x-hidden overflow-y-scroll bg-[#00000000] p-[25px] pb-[85px] text-[#D4D4D4] z-10 ">
+          {/* <DI
+            selectedData={selectedData}
+            setSelectedData={setSelectedData}
+            bankInfo={props?.allBanksInfo}
+          /> */}
           {/* <ShowTransactionInfo /> */}
           {/* <div className="w-full min-h-[30px] bg-[#0e0e0e] rounded-xl bg-[repeating-linear-gradient(-45deg,#191919_0_1px,transparent_2px_4px)]"></div> */}
           {/* <div className="w-full flex flex-col justify-center items-center font-[ieb] text-[30px] mb-[10px]">
@@ -715,6 +887,11 @@ export default function HomeSection(props) {
             <div className="text-[12px] text-[#7f7f7f] font-[600]">
               This Month Spend
             </div>
+            {geTotalExpenseForTheMonth(
+              props?.allTransactions,
+              new Date().getMonth(),
+              new Date().getFullYear()
+            )}
             <div
               className="font-[700] flex justify-center items-center text-[28px] my-[5px]"
               onClick={() => {
@@ -795,6 +972,8 @@ export default function HomeSection(props) {
                       props?.allTransactions
                     )}
                     seperateByDate={props?.showDateWiseGrouped}
+                    allBanksInfo={props?.allBanksInfo}
+                    setSelectedData={setSelectedData}
                   />
                 );
               }

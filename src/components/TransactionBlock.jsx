@@ -91,20 +91,28 @@ export default function TransactionBlock(props) {
                   : props?.mainDataArr[props?.index + 1]?.isGroup
                   ? " rounded-b-xl rounded-t-sm"
                   : " rounded-sm")
+                // (props?.index == -2 ? " fixed" : " block")
+                // (props?.index == 2
+                //   ? "fixed top-1/2 left-1/2 z-50 -translate-y-1/2 h-[300px] "
+                //   : "relative w-full h-[60px] ")
               }
               key={props?.index}
+              style={{ transition: ".5s" }}
+              onClick={() => {
+                props?.setSelectedData(props?.data);
+              }}
             >
-              {/* <div
-                className="w-[35px] mr-[5px] h-[35px] mt-[-10px] rounded-full flex justify-start items-center  "
+              <div
+                className="w-[35px] mr-[12px] h-[35px]  rounded-md flex justify-center items-center bg-[#ffffff10] "
                 dangerouslySetInnerHTML={{
                   __html:
                     categoryToIconMapping[
                       props?.data?.transactionCategory.toLowerCase()
                     ],
                 }}
-              ></div> */}
+              ></div>
 
-              <div className="w-[calc(100%-0px)] flex justify-between items-center ">
+              <div className="w-[calc(100%-47px)] flex justify-between items-center ">
                 <div className="flex flex-col justify-start items-start w-[calc(100%-130px)]">
                   <div className="text-[16px] whitespace-nowrap w-full overflow-hidden text-ellipsis">
                     {props?.data?.transactionName}
@@ -117,7 +125,7 @@ export default function TransactionBlock(props) {
                     //       : themeColor?.lightTextSecondary,
                     //   }}
                   >
-                    {props?.data?.transactionType == "normal" ? (
+                    {/* {props?.data?.transactionType == "normal" ? (
                       <></>
                     ) : (
                       <HugeiconsIcon
@@ -126,17 +134,10 @@ export default function TransactionBlock(props) {
                         strokeWidth={2}
                         className="mr-[7px] text-[#03e9dad5]"
                       />
-                    )}
-
-                    <div className="mr-[10px] w-[15px] h-[15px] rounded-full  flex justify-center items-center">
+                    )} */}
+                    {/* <div className="mr-[10px] w-[15px] h-[15px] rounded-full  flex justify-center items-center">
                       {props?.data?.transactionStatus == "Completed" ? (
                         <>
-                          {/* <HugeiconsIcon
-                            icon={CheckmarkCircle02Icon}
-                            size={12}
-                            strokeWidth={2}
-                            className="text-[#43e90760]"
-                          /> */}
                         </>
                       ) : (
                         <HugeiconsIcon
@@ -146,6 +147,21 @@ export default function TransactionBlock(props) {
                           className="text-[#ffae00]"
                         />
                       )}
+                    </div> */}
+                    <div className=" ">
+                      {
+                        props?.allBanksInfo?.bankDataObj?.[
+                          props?.data?.from
+                        ]?.bankName?.split(" ")[0]
+                      }
+                    </div>
+                    --
+                    <div>
+                      {
+                        props?.allBanksInfo?.bankDataObj?.[
+                          props?.data?.to
+                        ]?.bankName?.split(" ")[0]
+                      }
                     </div>
                     {/* {props?.data?.transactionStatus} */}
                   </div>
