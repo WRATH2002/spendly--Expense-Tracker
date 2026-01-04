@@ -212,7 +212,18 @@ export default function ContentContainer(props) {
         }
       });
 
-      console.log("ffffff->", BankObj);
+      console.log(
+        "ffffff->",
+        snapshot?.data()?.AllBanks?.reduce((acc, data) => {
+          acc.push({
+            name: data?.bankName,
+            code: data?.code,
+            deleteFlag: data?.deleteFlag,
+            type: data?.type,
+          });
+          return acc;
+        }, [])
+      );
 
       setAllBanksInfo({
         bankDataArr: snapshot?.data()?.AllBanks?.reduce((acc, data) => {

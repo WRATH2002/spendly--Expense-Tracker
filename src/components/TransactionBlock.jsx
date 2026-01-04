@@ -34,6 +34,12 @@ import {
   formatNumberWithCommasAndTwoDigits,
   formatTransactionDate,
 } from "../utils/functions";
+import {
+  ArrowDownRight01Icon,
+  ArrowRight01Icon,
+  ArrowRight02Icon,
+  Calendar04Icon,
+} from "@hugeicons/core-free-icons/index";
 
 // --------------- Components related imports / others
 function formatAmount(amount) {
@@ -73,7 +79,7 @@ export default function TransactionBlock(props) {
             )}
             <div
               className={
-                "w-full h-[60px] flex justify-start items-center overflow-visible  font-[geist] bg-[#ffffff10] px-[12px]" +
+                "w-full h-[65px] flex justify-start items-center overflow-visible  font-[geist] bg-[#ffffff10] px-[15px]" +
                 (!props?.seperateByDate
                   ? props?.mainDataArr?.length == 2
                     ? " rounded-xl"
@@ -103,7 +109,7 @@ export default function TransactionBlock(props) {
               }}
             >
               <div
-                className="w-[35px] mr-[12px] h-[35px]  rounded-md flex justify-center items-center bg-[#ffffff10] "
+                className="w-[35px] mr-[15px] h-[35px]  rounded-md flex justify-center items-center text-[#a5a5a5] bg-[#ffffff10] "
                 dangerouslySetInnerHTML={{
                   __html:
                     categoryToIconMapping[
@@ -112,9 +118,9 @@ export default function TransactionBlock(props) {
                 }}
               ></div>
 
-              <div className="w-[calc(100%-47px)] flex justify-between items-center ">
-                <div className="flex flex-col justify-start items-start w-[calc(100%-130px)]">
-                  <div className="text-[16px] whitespace-nowrap w-full overflow-hidden text-ellipsis">
+              <div className="w-[calc(100%-50px)] flex justify-between items-center ">
+                <div className="flex flex-col justify-start items-start w-[calc(100%-110px)] mr-[10px]">
+                  <div className="text-[14px] whitespace-nowrap font-[500] w-full overflow-hidden text-ellipsis ">
                     {props?.data?.transactionName}
                   </div>
                   <div
@@ -148,43 +154,95 @@ export default function TransactionBlock(props) {
                         />
                       )}
                     </div> */}
-                    <div className=" ">
-                      {
-                        props?.allBanksInfo?.bankDataObj?.[
-                          props?.data?.from
-                        ]?.bankName?.split(" ")[0]
-                      }
+                    <div className="flex text-[8px] font-[500] justify-center items-center px-[5px] py-[2px] rounded-sm bg-[#ffffff18] text-[#afafaf] mt-[2px] mr-[5px]">
+                      <div className="ml-[0px] whitespace-nowrap flex justify-center items-center">
+                        <HugeiconsIcon
+                          icon={Calendar04Icon}
+                          size={8}
+                          strokeWidth={2.5}
+                          className=" mr-[5px] mt-[-1px]"
+                        />
+                        {new Date(props?.data?.transactionDate?.split("T")[0])
+                          ?.toGMTString()
+                          ?.split(" ")
+                          ?.slice(1, 4)
+                          .join(" ")}
+                      </div>
                     </div>
-                    --
-                    <div>
-                      {
-                        props?.allBanksInfo?.bankDataObj?.[
-                          props?.data?.to
-                        ]?.bankName?.split(" ")[0]
-                      }
+                    <div className="flex text-[8px] font-[500] justify-center items-center px-[5px] py-[2px] rounded-sm bg-[#ffffff18] text-[#afafaf] mt-[2px]">
+                      <div
+                        className={
+                          " " +
+                          (props?.data?.to?.length > 0
+                            ? " mr-[3px]"
+                            : " mr-[0px]") +
+                          (props?.data?.from?.length > 0
+                            ? " visible"
+                            : " hidden")
+                        }
+                      >
+                        {
+                          props?.allBanksInfo?.bankDataObj?.[
+                            props?.data?.from
+                          ]?.bankName?.split(" ")[0]
+                        }
+                      </div>
+                      <div
+                        className={
+                          "" +
+                          (props?.data?.from?.length == 0 ||
+                          props?.data?.to?.length == 0
+                            ? " hidden"
+                            : " visible")
+                        }
+                      >
+                        <HugeiconsIcon
+                          icon={ArrowRight02Icon}
+                          size={8}
+                          strokeWidth={4}
+                          className=" "
+                        />
+                      </div>
+                      <div
+                        className={
+                          "" +
+                          (props?.data?.from?.length > 0
+                            ? " ml-[3px]"
+                            : " ml-[0px]") +
+                          (props?.data?.to?.length > 0 ? " visible" : " hidden")
+                        }
+                      >
+                        {
+                          props?.allBanksInfo?.bankDataObj?.[
+                            props?.data?.to
+                          ]?.bankName?.split(" ")[0]
+                        }
+                      </div>
                     </div>
                     {/* {props?.data?.transactionStatus} */}
                   </div>
                 </div>
-                <div className="flex flex-col justify-start items-end w-[130px]">
-                  <div className="text-[16px]  flex justify-end items-center whitespace-nowrap ">
+                <div className="flex flex-col justify-start items-end w-[100px] overflow-x-visible">
+                  <div className="text-[14px]  flex justify-end items-center whitespace-nowrap font-[500] ">
                     {/* <div className="text-[18px] mt-[2px] mr-[4px] ">+</div>{" "} */}
                     ₹ {formatAmount(props?.data?.transactionAmount)}
                   </div>
                   <div
-                    className="text-[12px] mt-[0px]  text-[#595959] flex justify-end items-center"
+                    className="text-[12px] mt-[0px] whitespace-nowrap text-[#595959] flex justify-end items-center"
                     //   style={{
                     //     color: props?.theme
                     //       ? themeColor?.darkTextSecondary
                     //       : themeColor?.lightTextSecondary,
                     //   }}
                   >
-                    {new Date(props?.data?.transactionDate?.split("T")[0])
-                      ?.toGMTString()
-                      ?.split(" ")
-                      ?.slice(1, 4)
-                      .join(" ")}
-                    {props?.data?.isInward ? (
+                    <div className="whitespace-nowrap">
+                      {new Date(props?.data?.transactionDate?.split("T")[0])
+                        ?.toGMTString()
+                        ?.split(" ")
+                        ?.slice(1, 4)
+                        .join(" ")}
+                    </div>
+                    {/* {props?.data?.isInward ? (
                       <div className="min-w-[12px] max-w-[15px] rounded-full aspect-square flex justify-center items-center bg-[#00ff083f] text-[#43e907] ml-[7px]">
                         <HugeiconsIcon
                           icon={ArrowDownLeft01Icon}
@@ -202,6 +260,71 @@ export default function TransactionBlock(props) {
                           className=""
                         />
                       </div>
+                    )} */}
+                    {props?.data?.from?.length > 0 &&
+                    props?.data?.to?.length > 0 ? (
+                      <div className="min-w-[12px] max-w-[15px] rounded-full aspect-square flex justify-center items-center bg-[#ffea003f] text-[#ddcc0f] ml-[7px] scale-110">
+                        <HugeiconsIcon
+                          icon={ArrowDownLeft01Icon}
+                          size={8}
+                          strokeWidth={3}
+                          className="rotate-45"
+                        />
+                        <HugeiconsIcon
+                          icon={ArrowDownLeft01Icon}
+                          size={8}
+                          strokeWidth={3}
+                          className="-rotate-[135deg] ml-[-6px]"
+                        />
+                      </div>
+                    ) : props?.data?.from?.length > 0 ? (
+                      <>
+                        {props?.data?.from ==
+                        props?.allBanksInfo?.activeBankCode ? (
+                          <div className="min-w-[12px] max-w-[15px] rounded-full aspect-square flex justify-center items-center bg-[#ff8c003f] text-[#ec8415] ml-[7px] scale-110">
+                            <HugeiconsIcon
+                              icon={ArrowUpRight01Icon}
+                              size={8}
+                              strokeWidth={3}
+                              className=""
+                            />
+                          </div>
+                        ) : (
+                          <div className="min-w-[12px] max-w-[15px] rounded-full aspect-square flex justify-center items-center bg-[#ff8c003f] text-[#ec8415] ml-[7px] scale-110">
+                            <HugeiconsIcon
+                              icon={ArrowUpRight01Icon}
+                              size={8}
+                              strokeWidth={3}
+                              className=""
+                            />
+                          </div>
+                        )}
+                      </>
+                    ) : props?.data?.to?.length > 0 ? (
+                      <>
+                        {props?.data?.to ==
+                        props?.allBanksInfo?.activeBankCode ? (
+                          <div className="min-w-[12px] max-w-[15px] rounded-full aspect-square flex justify-center items-center bg-[#00ff083f] text-[#43e907] ml-[7px] scale-110">
+                            <HugeiconsIcon
+                              icon={ArrowDownLeft01Icon}
+                              size={8}
+                              strokeWidth={3}
+                              className=""
+                            />
+                          </div>
+                        ) : (
+                          <div className="min-w-[12px] max-w-[15px] rounded-full aspect-square flex justify-center items-center bg-[#00ff083f] text-[#43e907] ml-[7px] scale-110">
+                            <HugeiconsIcon
+                              icon={ArrowDownLeft01Icon}
+                              size={8}
+                              strokeWidth={3}
+                              className=""
+                            />
+                          </div>
+                        )}
+                      </>
+                    ) : (
+                      <></>
                     )}
                   </div>
                 </div>

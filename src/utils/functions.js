@@ -887,10 +887,7 @@ function getThisMonthExpense(allTransactionList, activeBankCode) {
     return {
       thisMonth: totalSpentThisMonth,
       prevMonth: totalSpentLastMonth,
-      conclusion:
-        totalSpentLastMonth == 0
-          ? "No past data available"
-          : `${percentage}% upper than last month`,
+      conclusion: `${percentage}% upper than last month`,
       isMore: true,
       isSame: false,
     };
@@ -902,10 +899,7 @@ function getThisMonthExpense(allTransactionList, activeBankCode) {
     return {
       thisMonth: totalSpentThisMonth,
       prevMonth: totalSpentLastMonth,
-      conclusion:
-        totalSpentLastMonth == 0
-          ? "No past data available"
-          : `${Math.round(percentage)}% lower than last month`,
+      conclusion: `${Math.round(percentage)}% lower than last month`,
       isMore: false,
       isSame: false,
     };
@@ -924,6 +918,273 @@ function formatAmount(amount) {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   }).format(amount);
+}
+
+function geTotalExpenseForTheMonth(allBanksInfo, allTransactions) {
+  let monthlyDataArr = [];
+  let returnDataObj = {};
+  // console.log(props?.allBanksInfo);
+  allBanksInfo?.bankDataArr?.forEach((data) => {
+    let currMonth = new Date().getMonth() + 1;
+    let currYear = new Date().getFullYear();
+    let prevMonth = currMonth == 1 ? 12 : currMonth - 1;
+    let prevYear = currMonth == 1 ? currYear - 1 : currYear;
+    let thisMonthExpense = 0;
+    let thisMonthTotalTransactions = 0;
+    let prevMonthExpense = 0;
+    let prevMonthTotalTransactions = 0;
+
+    allTransactions?.forEach((transaction, index) => {
+      // ----
+      if (data?.code == allBanksInfo?.activeBankCode) {
+        if (
+          transaction?.transactionDate?.split("-")[0] == currYear &&
+          transaction?.transactionDate?.split("-")[1] == currMonth
+        ) {
+          if (transaction?.from == data?.code && transaction?.to == "") {
+            thisMonthExpense += Number(
+              parseFloat(transaction?.transactionAmount)?.toFixed(2)
+            );
+            thisMonthTotalTransactions += 1;
+          }
+        }
+        // ----
+        else if (
+          transaction?.transactionDate?.split("-")[0] == prevYear &&
+          transaction?.transactionDate?.split("-")[1] == prevMonth
+        ) {
+          if (transaction?.from == data?.code && transaction?.to == "") {
+            prevMonthExpense += Number(
+              parseFloat(transaction?.transactionAmount)?.toFixed(2)
+            );
+            prevMonthTotalTransactions += 1;
+          }
+        }
+      } else {
+        if (
+          transaction?.transactionDate?.split("-")[0] == currYear &&
+          transaction?.transactionDate?.split("-")[1] == currMonth
+        ) {
+          if (transaction?.from == data?.code && transaction?.to == "") {
+            thisMonthExpense += Number(
+              parseFloat(transaction?.transactionAmount)?.toFixed(2)
+            );
+            thisMonthTotalTransactions += 1;
+          } else if (transaction?.to == data?.code && transaction?.from == "") {
+            thisMonthExpense -= Number(
+              parseFloat(transaction?.transactionAmount)?.toFixed(2)
+            );
+            thisMonthTotalTransactions += 1;
+          }
+        }
+        // ----
+        else if (
+          transaction?.transactionDate?.split("-")[0] == prevYear &&
+          transaction?.transactionDate?.split("-")[1] == prevMonth
+        ) {
+          if (transaction?.from == data?.code && transaction?.to == "") {
+            prevMonthExpense += Number(
+              parseFloat(transaction?.transactionAmount)?.toFixed(2)
+            );
+            prevMonthTotalTransactions += 1;
+          } else if (transaction?.to == data?.code && transaction?.from == "") {
+            prevMonthExpense -= Number(
+              parseFloat(transaction?.transactionAmount)?.toFixed(2)
+            );
+            thisMonthTotalTransactions += 1;
+          }
+        }
+      }
+    });
+
+    monthlyDataArr.push({
+      bankCode: data?.code,
+      thisMonthExpense,
+      thisMonthTotalTransactions,
+      prevMonthExpense,
+      prevMonthTotalTransactions,
+    });
+  });
+
+  let totalExpenseForCurrMonth = 0;
+  let totalExpenseForPrevMonth = 0;
+  monthlyDataArr?.forEach((data) => {
+    totalExpenseForCurrMonth += data?.thisMonthExpense;
+    totalExpenseForPrevMonth += data?.prevMonthExpense;
+  });
+
+  let percentage = 0;
+
+  if (totalExpenseForCurrMonth > totalExpenseForPrevMonth) {
+    percentage = (
+      ((totalExpenseForCurrMonth - totalExpenseForPrevMonth) /
+        totalExpenseForPrevMonth) *
+      100
+    ).toFixed(2);
+    returnDataObj = {
+      thisMonth: totalExpenseForCurrMonth,
+      prevMonth: totalExpenseForPrevMonth,
+      conclusion: `${percentage}% upper than last month`,
+      isMore: true,
+      isSame: false,
+    };
+  } else if (totalExpenseForCurrMonth < totalExpenseForPrevMonth) {
+    percentage = (
+      ((totalExpenseForPrevMonth - totalExpenseForCurrMonth) /
+        totalExpenseForPrevMonth) *
+      100
+    ).toFixed(2);
+    returnDataObj = {
+      thisMonth: totalExpenseForCurrMonth,
+      prevMonth: totalExpenseForPrevMonth,
+      conclusion: `${Math.round(percentage)}% lower than last month`,
+      isMore: false,
+      isSame: false,
+    };
+  } else if (totalExpenseForPrevMonth == totalExpenseForCurrMonth) {
+    return {
+      thisMonth: totalExpenseForCurrMonth,
+      prevMonth: totalExpenseForPrevMonth,
+      conclusion: "Same as last month",
+      isSame: true,
+    };
+  }
+
+  console.log("monthlyDataArr", monthlyDataArr);
+  return returnDataObj;
+}
+
+function geQuickInfoForBank(allBanksInfo, allTransactions, bankCode) {
+  let monthlyDataArr = [];
+  let returnDataObj = {};
+  // console.log(props?.allBanksInfo);
+
+  let currMonth = new Date().getMonth() + 1;
+  let currYear = new Date().getFullYear();
+  let prevMonth = currMonth == 1 ? 12 : currMonth - 1;
+  let prevYear = currMonth == 1 ? currYear - 1 : currYear;
+  let thisMonthExpense = 0;
+  let thisMonthTotalTransactions = 0;
+  let prevMonthExpense = 0;
+  let prevMonthTotalTransactions = 0;
+
+  allTransactions?.forEach((transaction, index) => {
+    // ----
+    if (bankCode == allBanksInfo?.activeBankCode) {
+      if (
+        transaction?.transactionDate?.split("-")[0] == currYear &&
+        transaction?.transactionDate?.split("-")[1] == currMonth
+      ) {
+        if (transaction?.from == bankCode && transaction?.to == "") {
+          thisMonthExpense += Number(
+            parseFloat(transaction?.transactionAmount)?.toFixed(2)
+          );
+          thisMonthTotalTransactions += 1;
+        }
+      }
+      // ----
+      else if (
+        transaction?.transactionDate?.split("-")[0] == prevYear &&
+        transaction?.transactionDate?.split("-")[1] == prevMonth
+      ) {
+        if (transaction?.from == bankCode && transaction?.to == "") {
+          prevMonthExpense += Number(
+            parseFloat(transaction?.transactionAmount)?.toFixed(2)
+          );
+          prevMonthTotalTransactions += 1;
+        }
+      }
+    } else {
+      if (
+        transaction?.transactionDate?.split("-")[0] == currYear &&
+        transaction?.transactionDate?.split("-")[1] == currMonth
+      ) {
+        if (transaction?.from == bankCode && transaction?.to == "") {
+          thisMonthExpense += Number(
+            parseFloat(transaction?.transactionAmount)?.toFixed(2)
+          );
+          thisMonthTotalTransactions += 1;
+        } else if (transaction?.to == bankCode && transaction?.from == "") {
+          thisMonthExpense -= Number(
+            parseFloat(transaction?.transactionAmount)?.toFixed(2)
+          );
+          thisMonthTotalTransactions += 1;
+        }
+      }
+      // ----
+      else if (
+        transaction?.transactionDate?.split("-")[0] == prevYear &&
+        transaction?.transactionDate?.split("-")[1] == prevMonth
+      ) {
+        if (transaction?.from == bankCode && transaction?.to == "") {
+          prevMonthExpense += Number(
+            parseFloat(transaction?.transactionAmount)?.toFixed(2)
+          );
+          prevMonthTotalTransactions += 1;
+        } else if (transaction?.to == bankCode && transaction?.from == "") {
+          prevMonthExpense -= Number(
+            parseFloat(transaction?.transactionAmount)?.toFixed(2)
+          );
+          thisMonthTotalTransactions += 1;
+        }
+      }
+    }
+  });
+
+  monthlyDataArr.push({
+    bankCode: bankCode,
+    thisMonthExpense,
+    thisMonthTotalTransactions,
+    prevMonthExpense,
+    prevMonthTotalTransactions,
+  });
+  // ============================
+  let totalExpenseForCurrMonth = 0;
+  let totalExpenseForPrevMonth = 0;
+  monthlyDataArr?.forEach((data) => {
+    totalExpenseForCurrMonth += data?.thisMonthExpense;
+    totalExpenseForPrevMonth += data?.prevMonthExpense;
+  });
+
+  let percentage = 0;
+
+  if (totalExpenseForCurrMonth > totalExpenseForPrevMonth) {
+    percentage = (
+      ((totalExpenseForCurrMonth - totalExpenseForPrevMonth) /
+        totalExpenseForPrevMonth) *
+      100
+    ).toFixed(2);
+    returnDataObj = {
+      thisMonth: totalExpenseForCurrMonth,
+      prevMonth: totalExpenseForPrevMonth,
+      conclusion: `${percentage}% upper than last month`,
+      isMore: true,
+      isSame: false,
+    };
+  } else if (totalExpenseForCurrMonth < totalExpenseForPrevMonth) {
+    percentage = (
+      ((totalExpenseForPrevMonth - totalExpenseForCurrMonth) /
+        totalExpenseForPrevMonth) *
+      100
+    ).toFixed(2);
+    returnDataObj = {
+      thisMonth: totalExpenseForCurrMonth,
+      prevMonth: totalExpenseForPrevMonth,
+      conclusion: `${Math.round(percentage)}% lower than last month`,
+      isMore: false,
+      isSame: false,
+    };
+  } else if (totalExpenseForPrevMonth == totalExpenseForCurrMonth) {
+    return {
+      thisMonth: totalExpenseForCurrMonth,
+      prevMonth: totalExpenseForPrevMonth,
+      conclusion: "Same as last month",
+      isSame: true,
+    };
+  }
+
+  console.log("monthlyDataArr", monthlyDataArr);
+  return returnDataObj;
 }
 
 export {
@@ -946,4 +1207,6 @@ export {
   getBankWiseInfo,
   getThisMonthExpense,
   formatAmount,
+  geTotalExpenseForTheMonth,
+  geQuickInfoForBank,
 };

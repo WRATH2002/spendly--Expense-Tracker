@@ -22,10 +22,12 @@ import { colorCode, monthName } from "../../utils/constants";
 import {
   changeMonthIndex,
   formatAmount,
+  geQuickInfoForBank,
   getBankWiseInfo,
   getCategoryWiseCountWithInfoForTheMonth,
   getData,
   getMonthYearDetails,
+  geTotalExpenseForTheMonth,
   getPeriodWiseComparison,
   getThisMonthExpense,
   getTotalExpenseForTheMonth,
@@ -130,7 +132,11 @@ export default function ChartSection({ allTransactions, allBanksInfo }) {
 
   function getQuickInfoForBank(bankCode) {}
 
-  function getBankFullDetailsWithInfo(transactions, bankFullInfoWithDetails) {
+  function getBankFullDetailsWithInfo(
+    transactions,
+    allTransactionsRaw,
+    bankFullInfoWithDetails
+  ) {
     let bankDataArr = bankFullInfoWithDetails?.bankDataArr;
     let bankDataObj = bankFullInfoWithDetails?.bankDataObj;
     let activeBankCode = bankFullInfoWithDetails?.activeBankCode;
@@ -206,7 +212,7 @@ export default function ChartSection({ allTransactions, allBanksInfo }) {
 
     bankDataArr?.forEach((data) => {
       bankInfoObj = {
-        bankName: data?.bankName,
+        bankName: data?.name,
         bankCode: data?.code,
         isActive: !data?.deleteFlag,
         isPrimary: activeBankCode == data?.code,
@@ -233,7 +239,11 @@ export default function ChartSection({ allTransactions, allBanksInfo }) {
       // );
       bankInfoObjArr[index] = {
         ...data,
-        quickInfo: getThisMonthExpense(transactions, data?.bankInfo?.bankCode),
+        quickInfo: geQuickInfoForBank(
+          allBanksInfo,
+          allTransactionsRaw,
+          data?.bankInfo?.bankCode
+        ),
       };
     });
     console.log(bankInfoObjArr);
@@ -458,6 +468,7 @@ export default function ChartSection({ allTransactions, allBanksInfo }) {
             )} */}
               {getBankFullDetailsWithInfo(
                 groupAndSortTransactions(allTransactions),
+                allTransactions,
                 allBanksInfo
               )?.banks?.map((data, index) => {
                 return (
@@ -564,6 +575,7 @@ export default function ChartSection({ allTransactions, allBanksInfo }) {
 
               {getBankFullDetailsWithInfo(
                 groupAndSortTransactions(allTransactions),
+                allTransactions,
                 allBanksInfo
               )?.wallets?.map((data, index) => {
                 return (

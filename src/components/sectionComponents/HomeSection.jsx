@@ -39,6 +39,7 @@ import {
   getData,
   getExpensesForTheMonth,
   getMonthYearDetails,
+  geTotalExpenseForTheMonth,
   getPeriodWiseComparison,
   getTopCategoryForTheMonth,
   getTotalExpenseForTheMonth,
@@ -295,94 +296,6 @@ export default function HomeSection(props) {
     }
   }
 
-  function getThisMonthExpense(allTransactionList, activeBankCode) {
-    let totalSpentThisMonth = 0;
-    let totalSpentLastMonth = 0;
-
-    allTransactionList?.forEach((data, index) => {
-      if (!data?.isGroup) {
-        // ---------------
-        if (
-          data?.transactionDate?.split("-")[0] == new Date().getFullYear() &&
-          data?.transactionDate?.split("-")[1] == new Date().getMonth() + 1 &&
-          data?.from == activeBankCode &&
-          data?.to == ""
-        ) {
-          totalSpentThisMonth += Number(
-            parseFloat(data?.transactionAmount)?.toFixed(2)
-          );
-        } else if (
-          data?.transactionDate?.split("-")[0] == new Date().getFullYear() &&
-          data?.transactionDate?.split("-")[1] == new Date().getMonth() + 1 &&
-          data?.from == activeBankCode &&
-          data?.to == ""
-        ) {
-          totalSpentThisMonth += Number(
-            parseFloat(data?.transactionAmount)?.toFixed(2)
-          );
-        }
-        // ---------------
-        if (data?.transactionDate?.split("-")[1] == 1) {
-          if (
-            data?.transactionDate?.split("-")[0] ==
-              new Date().getFullYear() - 1 &&
-            data?.transactionDate?.split(" ")[1] == 12 &&
-            data?.from == activeBankCode
-          ) {
-            totalSpentLastMonth += Number(
-              parseFloat(data?.transactionAmount)?.toFixed(2)
-            );
-          }
-        } else {
-          if (
-            data?.transactionDate?.split("-")[0] == new Date().getFullYear() &&
-            data?.transactionDate?.split("-")[1] == new Date().getMonth() - 2 &&
-            data?.from == activeBankCode
-          ) {
-            totalSpentLastMonth += Number(
-              parseFloat(data?.transactionAmount)?.toFixed(2)
-            );
-          }
-        }
-      }
-    });
-
-    let percentage = 0;
-
-    if (totalSpentThisMonth > totalSpentLastMonth) {
-      percentage = (
-        ((totalSpentThisMonth - totalSpentLastMonth) / totalSpentLastMonth) *
-        100
-      ).toFixed(2);
-      return {
-        thisMonth: totalSpentThisMonth,
-        prevMonth: totalSpentLastMonth,
-        conclusion: `${percentage}% upper than last month`,
-        isMore: true,
-        isSame: false,
-      };
-    } else if (totalSpentThisMonth < totalSpentLastMonth) {
-      percentage = (
-        ((totalSpentLastMonth - totalSpentThisMonth) / totalSpentLastMonth) *
-        100
-      ).toFixed(2);
-      return {
-        thisMonth: totalSpentThisMonth,
-        prevMonth: totalSpentLastMonth,
-        conclusion: `${Math.round(percentage)}% lower than last month`,
-        isMore: false,
-        isSame: false,
-      };
-    } else if (totalSpentLastMonth == totalSpentThisMonth) {
-      return {
-        thisMonth: totalSpentThisMonth,
-        prevMonth: totalSpentLastMonth,
-        conclusion: "Same as last month",
-        isSame: true,
-      };
-    }
-  }
-
   function formatAmount(amount) {
     return new Intl.NumberFormat("en-IN", {
       minimumFractionDigits: 2,
@@ -509,50 +422,6 @@ export default function HomeSection(props) {
   // .... totalExpenseForThePreviousMonth
   // .... percentageChangeBetweenTwoMonths
   // .... totalTransactionsForTheMonth
-  function geTotalExpenseForTheMonth(allTransactions, monthIndex, year) {
-    let totalExpenseForTheMonth = 0;
-    let totalExpenseForThePreviousMonth = 0;
-    let totalTransactionsForTheMonth = 0;
-    allTransactions?.forEach((data, index) => {
-      if (!data?.isGroup) {
-        if (
-          parseInt(data?.transactionDate?.split("-")[1]) ==
-            parseInt(monthIndex) + 1 &&
-          parseInt(data?.transactionDate?.split("-")[0]) == parseInt(year)
-        ) {
-          totalExpenseForTheMonth += parseFloat(data?.transactionAmount);
-          totalTransactionsForTheMonth += 1;
-        }
-      }
-    });
-
-    console.log(
-      "mdmdmd",
-      getBankDetailedInfo(allTransactions, "BANK001", "", "")
-    );
-    console.log(
-      "mdmdmd",
-      getBankDetailedInfo(allTransactions, "BANK002", "", "")
-    );
-    console.log(
-      "mdmdmd",
-      getBankDetailedInfo(allTransactions, "BANK003", "", "")
-    );
-
-    console.log("Total Expense for the Month => ", {
-      totalExpenseForTheMonth,
-      totalExpenseForThePreviousMonth,
-      percentageChangeBetweenTwoMonths: 0,
-      totalTransactionsForTheMonth,
-    });
-
-    // return {
-    //   totalExpenseForTheMonth,
-    //   totalExpenseForThePreviousMonth,
-    //   percentageChangeBetweenTwoMonths: 0,
-    //   totalTransactionsForTheMonth,
-    // };
-  }
 
   const [selectedData, setSelectedData] = useState({});
 
@@ -887,11 +756,7 @@ export default function HomeSection(props) {
             <div className="text-[12px] text-[#7f7f7f] font-[600]">
               This Month Spend
             </div>
-            {geTotalExpenseForTheMonth(
-              props?.allTransactions,
-              new Date().getMonth(),
-              new Date().getFullYear()
-            )}
+
             <div
               className="font-[700] flex justify-center items-center text-[28px] my-[5px]"
               onClick={() => {
@@ -900,17 +765,17 @@ export default function HomeSection(props) {
                   "",
                   ""
                 );
-                getThisMonthExpense(
-                  groupAndSortTransactions(props?.allTransactions),
-                  "BANK001"
-                );
+                // getThisMonthExpense(
+                //   groupAndSortTransactions(props?.allTransactions),
+                //   "BANK001"
+                // );
               }}
             >
               <div className="mr-[5px]">₹</div>
               {formatAmount(
-                getThisMonthExpense(
-                  groupAndSortTransactions(props?.allTransactions),
-                  "BANK001"
+                geTotalExpenseForTheMonth(
+                  props?.allBanksInfo,
+                  props?.allTransactions
                 )?.thisMonth
               )}
             </div>
@@ -924,9 +789,9 @@ export default function HomeSection(props) {
             </div> */}
             <div className="text-[12px] flex justify-center items-center text-[#7f7f7f] font-[600]">
               <div className="mr-[5px]">
-                {getThisMonthExpense(
-                  groupAndSortTransactions(props?.allTransactions),
-                  "BANK001"
+                {geTotalExpenseForTheMonth(
+                  props?.allBanksInfo,
+                  props?.allTransactions
                 )?.isSame ? (
                   <HugeiconsIcon
                     icon={ArrowHorizontalIcon}
@@ -934,9 +799,9 @@ export default function HomeSection(props) {
                     strokeWidth={1.4}
                     className=""
                   />
-                ) : getThisMonthExpense(
-                    groupAndSortTransactions(props?.allTransactions),
-                    "BANK001"
+                ) : geTotalExpenseForTheMonth(
+                    props?.allBanksInfo,
+                    props?.allTransactions
                   )?.isMore ? (
                   <HugeiconsIcon
                     icon={TradeUpIcon}
@@ -954,9 +819,9 @@ export default function HomeSection(props) {
                 )}
               </div>
               {
-                getThisMonthExpense(
-                  groupAndSortTransactions(props?.allTransactions),
-                  "BANK001"
+                geTotalExpenseForTheMonth(
+                  props?.allBanksInfo,
+                  props?.allTransactions
                 )?.conclusion
               }
             </div>
