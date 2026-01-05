@@ -37,6 +37,7 @@ import { hover } from "framer-motion";
 import { AnimatedNumber } from "../animations/AnimatedNumber";
 import TransactionChart from "../TransactionChart";
 import FullBankDetailModal from "../FullBankDetailModal";
+import { AddSquareIcon, PlusSignIcon } from "@hugeicons/core-free-icons/index";
 
 const options = ["Monthly", "Quarterly", "Yearly"];
 
@@ -454,12 +455,20 @@ export default function ChartSection({ allTransactions, allBanksInfo }) {
       ) : (
         <div className="w-full h-full flex flex-col justify-start items-center overflow-y-scroll bg-[#00000000] p-[15px] text-[#D4D4D4] font-[geist] z-0 ">
           <div className="w-full flex flex-col justify-start items-start p-[10px]">
-            <div className="w-full flex flex-col justify-start items-start bg-[#ffffff12] rounded-xl p-[15px] px-[20px] font-[geist]">
-              <div className="w-full flex justify-between items-center text-[12px] text-[#606060]">
-                <div className="font-[500]">My Banks</div>
-                {/* <div>See All</div> */}
+            <div className="w-full flex flex-col justify-start items-start bg-[#ffffff12] rounded-xl p-[10px] px-[15px] font-[geist]">
+              <div className="w-full flex justify-between items-center text-[12px] text-[#3b3b3b]">
+                <div className="font-[700] uppercase">My Banks</div>
+                <div className="text-[#606060] flex justify-end items-center ">
+                  {/* Add New */}
+                  <HugeiconsIcon
+                    icon={PlusSignIcon}
+                    size={16}
+                    strokeWidth={2.5}
+                    className="ml-[5px]"
+                  />
+                </div>
               </div>
-              <div className="w-full border-t border-[#202020] my-[15px]"></div>
+              <div className="w-full border-t border-[#202020] my-[10px]"></div>
               {/* {getBankDetailedInfo(
               groupAndSortTransactions(allTransactions),
               "BANK001",
@@ -475,7 +484,7 @@ export default function ChartSection({ allTransactions, allBanksInfo }) {
                   <>
                     <div
                       className={
-                        "w-full border-t border-[#202020] my-[15px]" +
+                        "w-full border-t border-[#202020] my-[10px]" +
                         (index != 0 ? " visible" : " hidden")
                       }
                     ></div>
@@ -483,7 +492,7 @@ export default function ChartSection({ allTransactions, allBanksInfo }) {
                       className="w-full flex justify-start items-start"
                       key={index}
                     >
-                      <div className="min-w-[40px] h-[40px] mr-[20px] rounded-md flex justify-center items-center bg-[#ffffff12] text-[#999999] mt-[4px] ">
+                      <div className="min-w-[40px] h-[40px] mr-[15px] rounded-md flex justify-center items-center bg-[#ffffff12] text-[#999999] mt-[4px] ">
                         <HugeiconsIcon
                           icon={BankIcon}
                           size={18}
@@ -492,34 +501,36 @@ export default function ChartSection({ allTransactions, allBanksInfo }) {
                         />
                       </div>
                       <div className="w-full flex flex-col justify-start items-start ">
-                        <div className="font-[600]">
+                        <div className="font-[600] text-[14px] flex justify-start items-center mb-[3px]">
                           {data?.bankInfo?.bankName}
-                        </div>
-                        <div className="text-[12px] text-[#676767] mt-[5px]">
-                          This month expense
-                        </div>
-                        <div className="w-full flex justify-start items-center text-[14px] text-[#a8a8a8] font-[500] ">
-                          <span className="mr-[5px]">₹</span>
-                          {formatAmount(data?.quickInfo?.thisMonth)}
-                        </div>
-                        <div
-                          className={
-                            "px-[6px] py-[1px] rounded-md bg-[#69e90013] border border-[#69e90006] text-[#5ddd02c5] text-[10px] mt-[10px] flex justify-center items-center" +
-                            (data?.bankInfo?.isPrimary ? " visible" : " hidden")
-                          }
-                        >
-                          {/* <HugeiconsIcon
+                          <div
+                            className={
+                              "ml-[10px] px-[6px] py-[1px] rounded-sm bg-[#69e90013] border border-[#69e90006] text-[#5ddd02c5] text-[8px] font-[600] mt-[0px] flex justify-center items-center" +
+                              (data?.bankInfo?.isPrimary
+                                ? " visible"
+                                : " hidden")
+                            }
+                          >
+                            {/* <HugeiconsIcon
                           icon={CircleIcon}
                           size={5}
                           strokeWidth={1}
                           fill="currentColor"
                           className="mr-[5px]"
                         />{" "} */}
-                          <span class="relative flex h-[5px] w-[5px] mr-[5px]">
-                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#5ddd02c5] opacity-75"></span>
-                            <span class="relative inline-flex rounded-full h-[5px] w-[5px] bg-[#5ddd02c5]"></span>
-                          </span>
-                          Primary
+                            <span class="relative flex h-[5px] w-[5px] mr-[5px]">
+                              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#5ddd02c5] opacity-75"></span>
+                              <span class="relative inline-flex rounded-full h-[5px] w-[5px] bg-[#5ddd02c5]"></span>
+                            </span>
+                            Primary
+                          </div>
+                        </div>
+                        <div className="text-[10px] text-[#676767] mt-[0px]">
+                          This month expense
+                        </div>
+                        <div className="w-full flex justify-start items-center text-[12px] text-[#a8a8a8] font-[500] ">
+                          <span className="mr-[5px]">₹</span>
+                          {formatAmount(data?.quickInfo?.thisMonth)}
                         </div>
                       </div>
                       <div className="mt-auto mb-auto">
@@ -566,12 +577,20 @@ export default function ChartSection({ allTransactions, allBanksInfo }) {
               <div></div>
             </div> */}
             </div>
-            <div className="w-full flex flex-col justify-start items-start bg-[#ffffff12] rounded-xl p-[15px] px-[20px] font-[geist] mt-[20px]">
-              <div className="w-full flex justify-between items-center text-[12px] text-[#606060]">
-                <div className="font-[500]">My Wallets</div>
-                {/* <div>See All</div> */}
+            <div className="w-full flex flex-col justify-start items-start bg-[#ffffff12] rounded-xl p-[10px] px-[15px] font-[geist] mt-[20px]">
+              <div className="w-full flex justify-between items-center text-[12px] text-[#3b3b3b]">
+                <div className="font-[700] uppercase">My Wallets</div>
+                <div className="text-[#606060] flex justify-end items-center ">
+                  {/* Add New */}
+                  <HugeiconsIcon
+                    icon={PlusSignIcon}
+                    size={16}
+                    strokeWidth={2.5}
+                    className="ml-[5px]"
+                  />
+                </div>
               </div>
-              <div className="w-full border-t border-[#202020] my-[15px]"></div>
+              <div className="w-full border-t border-[#202020] my-[10px]"></div>
 
               {getBankFullDetailsWithInfo(
                 groupAndSortTransactions(allTransactions),
@@ -590,7 +609,7 @@ export default function ChartSection({ allTransactions, allBanksInfo }) {
                       className="w-full flex justify-start items-start"
                       key={index}
                     >
-                      <div className="min-w-[40px] h-[40px] mr-[20px] rounded-md flex justify-center items-center bg-[#ffffff12] text-[#999999] mt-[4px] ">
+                      <div className="min-w-[40px] h-[40px] mr-[15px] rounded-md flex justify-center items-center bg-[#ffffff12] text-[#999999] mt-[4px] ">
                         <HugeiconsIcon
                           icon={Wallet05Icon}
                           size={18}
@@ -599,19 +618,19 @@ export default function ChartSection({ allTransactions, allBanksInfo }) {
                         />
                       </div>
                       <div className="w-full flex flex-col justify-start items-start ">
-                        <div className="font-[600]">
+                        <div className="font-[600] text-[14px] mb-[3px]">
                           {data?.bankInfo?.bankName}
                         </div>
-                        <div className="text-[12px] text-[#676767] mt-[5px]">
+                        <div className="text-[10px] text-[#676767] mt-[0px]">
                           This month expense
                         </div>
-                        <div className="w-full flex justify-start items-center text-[14px] text-[#a8a8a8] font-[500] ">
+                        <div className="w-full flex justify-start items-center text-[12px] text-[#a8a8a8] font-[500] ">
                           <span className="mr-[5px]">₹</span>
                           {formatAmount(data?.quickInfo?.thisMonth)}
                         </div>
                         <div
                           className={
-                            "px-[6px] py-[1px] rounded-md bg-[#69e90013] border border-[#69e90006] text-[#5ddd02c5] text-[10px] mt-[10px] flex justify-center items-center" +
+                            "px-[6px] py-[1px] rounded-sm bg-[#69e90013] border border-[#69e90006] text-[#5ddd02c5] text-[8px] font-[600] mt-[10px] flex justify-center items-center" +
                             (data?.bankInfo?.isPrimary ? " visible" : " hidden")
                           }
                         >
