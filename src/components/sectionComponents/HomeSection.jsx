@@ -50,6 +50,12 @@ import TransactionBlock from "../TransactionBlock";
 import CountUp from "../animations/CountUp";
 import ShowTransactionInfo from "../ShowTransactionInfo";
 import DI from "../DI";
+import { LineWobble } from "ldrs/react";
+import { Ring2 } from "ldrs/react";
+import "ldrs/react/Ring2.css";
+import "ldrs/react/LineWobble.css"; // Default values shown
+
+// Default values shown
 
 const getColor = (value) => {
   if (value < 45) return "#7ED957"; // green color -> creamy
@@ -91,7 +97,7 @@ export default function HomeSection(props) {
     if (!showContent) {
       setTimeout(() => {
         setShowContent(true);
-      }, 500);
+      }, 10);
     }
   }, [showContent]);
 
@@ -847,7 +853,24 @@ export default function HomeSection(props) {
           <div className=""></div>
         </div>
       ) : (
-        <div></div>
+        <div className="w-full h-[100svh] flex flex-col justify-center items-center overflow-x-hidden overflow-y-scroll">
+          {/* <LineWobble
+            size="40"
+            stroke="5"
+            bgOpacity="0.1"
+            speed="1.75"
+            color="#00FFC3"
+          /> */}
+
+          <Ring2
+            size="40"
+            stroke="5"
+            strokeLength="0.25"
+            bgOpacity="0.1"
+            speed="0.8"
+            color="#18bca0"
+          />
+        </div>
       )}
     </>
   );

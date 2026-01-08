@@ -1,8 +1,10 @@
 import React from "react";
+import DynamicIsland from "./smoothui/dynamic-island";
 
 export default function FullBankDetailModal() {
   return (
     <>
+      <DynamicIsland />
       {/* <div class="absolute inset-0 noise pointer-events-none"></div>
       <div className="grad rounded-t-full blur-[200px] w-full h-[200px] fixed left-0 bottom-[0px] -z-[0]"></div> */}
       <div
@@ -11,7 +13,7 @@ export default function FullBankDetailModal() {
           // setShowModal(false);
         }}
       >
-        <div className="w-full flex justify-center items-center">
+        {/* <div className="w-full flex justify-center items-center">
           <div className="px-[15px] py-[10px] flex justify-center items-center bg-[#ffffff12] rounded-md">
             Track Budget
             <div className="flex justify-start items-center w-[200px] mx-[10px]">
@@ -26,7 +28,7 @@ export default function FullBankDetailModal() {
             </div>
             96%
           </div>
-        </div>
+        </div> */}
         {/* <div
         className="w-full bg-[#1b1b1b] rounded-3xl flex flex-col justify-start items-start overflow-hidden text-[#fff] text-[14px]"
         onClick={(e) => {

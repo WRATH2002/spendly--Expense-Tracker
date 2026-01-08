@@ -38,6 +38,7 @@ import { AnimatedNumber } from "../animations/AnimatedNumber";
 import TransactionChart from "../TransactionChart";
 import FullBankDetailModal from "../FullBankDetailModal";
 import { AddSquareIcon, PlusSignIcon } from "@hugeicons/core-free-icons/index";
+import DynamicIsland from "../smoothui/dynamic-island";
 
 const options = ["Monthly", "Quarterly", "Yearly"];
 
@@ -104,6 +105,7 @@ export default function ChartSection({ allTransactions, allBanksInfo }) {
   const [activeSearch, setActiveSearch] = useState("Monthly");
   const [currDataInfo, setCurrDataInfo] = useState({});
   const [prevDataInfo, setPrevDataInfo] = useState({});
+  const [showMore, setShowMore] = useState([]);
 
   // useEffect(() => {
   //   const tempData = getPeriodWiseComparison(
@@ -450,8 +452,9 @@ export default function ChartSection({ allTransactions, allBanksInfo }) {
     <>
       <div class="absolute inset-0 noise pointer-events-none"></div>
       <div className="grad rounded-t-full blur-[200px] w-full h-[200px] fixed left-0 bottom-[0px] -z-[0]"></div>
-      {!true ? (
-        <FullBankDetailModal />
+      {/* <DynamicIsland /> */}
+      {showMore?.[0]?.show ? (
+        <FullBankDetailModal data={showMore?.[0]?.data} />
       ) : (
         <div className="w-full h-full flex flex-col justify-start items-center overflow-y-scroll bg-[#00000000] p-[15px] text-[#D4D4D4] font-[geist] z-0 ">
           <div className="w-full flex flex-col justify-start items-start p-[10px]">
@@ -491,6 +494,14 @@ export default function ChartSection({ allTransactions, allBanksInfo }) {
                     <div
                       className="w-full flex justify-start items-start"
                       key={index}
+                      onClick={() => {
+                        setShowMore([
+                          {
+                            show: true,
+                            data: data,
+                          },
+                        ]);
+                      }}
                     >
                       <div className="min-w-[40px] h-[40px] mr-[15px] rounded-md flex justify-center items-center bg-[#ffffff12] text-[#999999] mt-[4px] ">
                         <HugeiconsIcon

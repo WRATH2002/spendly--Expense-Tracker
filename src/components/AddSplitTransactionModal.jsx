@@ -29,6 +29,7 @@ import DropDownInput from "./DropDownInput";
 import { categories } from "../utils/categoryToIconSVGMapping";
 import { paymentTypeOptions } from "../utils/constants";
 import DateInput from "./DateInput";
+import PowerOffSlide from "./smoothui/power-off-slide";
 
 const listOfNames = [
   "Groceries",
@@ -122,7 +123,7 @@ export default function AddSplitTransactionModal({
       {
         label: "Transaction Name",
         isRequired: true,
-        placeholder: "eg: Puja Shopping",
+        placeholder: "eg: Diwali Shopping",
         value: name,
         setValue: setName,
         isEditable: true,
@@ -944,7 +945,17 @@ export default function AddSplitTransactionModal({
               <></>
             )}
           </div>
-          <div
+          <div className="min-h-[90px] w-full flex justify-center items-center font-[700] px-[20px] p-[5px] text-[#000] text-[14px]">
+            <PowerOffSlide
+              duration={1500}
+              label="Slide to power off"
+              onPowerOff={() => {
+                // setPoweredOff(true);
+                console.log("Power Off Triggered");
+              }}
+            />
+          </div>
+          {/* <div
             className={
               "mt-[0px] rounded-lg w-full min-h-[50px] flex justify-center items-center font-[700] bg-[#fff] text-[#000] text-[14px]" +
               (checkPreparedness() ? " opacity-100" : " opacity-30")
@@ -957,7 +968,7 @@ export default function AddSplitTransactionModal({
             }}
           >
             Add Transaction
-          </div>
+          </div> */}
         </div>
       </div>
     </>

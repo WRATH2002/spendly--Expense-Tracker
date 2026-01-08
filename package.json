@@ -23,7 +23,7 @@
     "geist": "^1.4.2",
     "ldrs": "^1.1.7",
     "lucide-react": "^0.523.0",
-    "motion": "^12.23.26",
+    "motion": "^12.24.12",
     "react": "^19.1.0",
     "react-apexcharts": "^1.7.0",
     "react-circular-progressbar": "^2.2.0",

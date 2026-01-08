@@ -1,11 +1,11 @@
 "use client";
+import { formatAmount } from "@/utils/functions";
 import {
-  Add01Icon,
+  BarChartIcon,
   DrinkIcon,
-  Home02Icon,
-  Invoice02Icon,
-  PieChartIcon,
-  Settings03Icon,
+  Progress02Icon,
+  WaterfallUp01Icon,
+  WaterfallUp02Icon,
 } from "@hugeicons/core-free-icons/index";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
@@ -37,90 +37,21 @@ const DEFAULT_BOUNCE = 0.3;
 const TIMER_INTERVAL_MS = 400;
 
 // Idle Component with Weather
-const DefaultIdle = () => {
+const DefaultIdle = ({
+  thisMonthExpense = 6591,
+  budget = 19000,
+  handleViewChange,
+  view,
+}) => {
   const [showTemp, setShowTemp] = useState(false);
 
   return (
-    <div className="w-[250px] flex justify-center items-center rounded-full">
-      <div className="w-full h-[50px] flex justify-evenly items-center  rounded-full z-[70]">
-        <HugeiconsIcon
-          icon={Home02Icon}
-          size={20}
-          strokeWidth={2.2}
-          // className={
-          //   "active:text-[#ffffff] ml-[-10px] " +
-          //   (activeSection == "home" ? " text-[#ffffff]" : " text-[#bcbcbc]")
-          // }
-          // onClick={() => {
-          //   if (activeSection !== "home") {
-          //     setActiveSection("home");
-          //     setActiveSplitSpace("");
-          //   }
-          // }}
-        />
-        <HugeiconsIcon
-          icon={PieChartIcon}
-          size={20}
-          strokeWidth={2.2}
-          // className={
-          //   "active:text-[#ffffff]  " +
-          //   (activeSection == "chart" ? " text-[#ffffff]" : " text-[#bcbcbc]")
-          // }
-          // onClick={() => {
-          //   if (activeSection !== "chart") {
-          //     setActiveSection("chart");
-          //     setActiveSplitSpace("");
-          //   }
-          // }}
-        />
-        <HugeiconsIcon
-          icon={Add01Icon}
-          size={20}
-          strokeWidth={2.2}
-          // className={
-          //   "active:text-[#ffffff]  " +
-          //   (activeSection == "addNew" ? " text-[#ffffff]" : " text-[#bcbcbc]")
-          // }
-          onClick={() => {
-            //   if (activeSection !== "addNew") {
-            //     setActiveSection("addNew");
-            //   }
-            setShowAddTransactionModal(true);
-          }}
-          // fill="currentColor"
-        />
-        <HugeiconsIcon
-          icon={Invoice02Icon}
-          size={20}
-          strokeWidth={2.2}
-          // className={
-          //   "active:text-[#ffffff]  " +
-          //   (activeSection == "split" ? " text-[#ffffff]" : " text-[#bcbcbc]")
-          // }
-          // onClick={() => {
-          //   if (activeSection !== "split") {
-          //     setActiveSection("split");
-          //   }
-          // }}
-        />
-        <HugeiconsIcon
-          icon={Settings03Icon}
-          size={20}
-          strokeWidth={2.2}
-          // className={
-          //   "active:text-[#ffffff] mr-[-10px] " +
-          //   (activeSection == "settings"
-          //     ? " text-[#ffffff]"
-          //     : " text-[#bcbcbc]")
-          // }
-          // onClick={() => {
-          //   if (activeSection !== "settings") {
-          //     setActiveSection("settings");
-          //     setActiveSplitSpace("");
-          //   }
-          // }}
-        />
-      </div>
+    <div
+      className="w-full flex justify-center items-center px-3 py-3"
+      onClick={() => {
+        handleViewChange("ring", view);
+      }}
+    >
       {/* <motion.div
         className="flex w-[100px] items-center gap-2 px-3 py-2"
         layout
@@ -154,23 +85,98 @@ const DefaultIdle = () => {
           )}
         </AnimatePresence>
       </motion.div> */}
+      <div className="flex justify-start items-center">
+        <div className="w-[40px] h-[18px] rounded-full bg-[#ffffff14] overflow-hidden flex justify-start items-center">
+          <div className="w-[43%] h-full rounded-r-[2px] bg-[#4bb202] shadow-sm "></div>
+        </div>
+        <div className="text-[#acacac] text-[12px] ml-[10px]">
+          {`${((thisMonthExpense / budget) * 100).toFixed(1)}`}%
+        </div>
+      </div>
     </div>
   );
 };
 
 // Ring Component
-const DefaultRing = () => (
-  <div className="flex w-64 items-center gap-3 overflow-hidden px-4 py-2 text-foreground">
-    <Phone className="h-5 w-5 text-green-500" />
+const DefaultRing = ({
+  thisMonthExpense = 6591,
+  budget = 19000,
+  weeklyData = [
+    {
+      amount: 2024,
+    },
+    {
+      amount: 1500,
+    },
+    {
+      amount: 867,
+    },
+    {
+      amount: 0,
+    },
+  ],
+  handleViewChange,
+  view,
+}) => (
+  <div
+    className="flex w-full items-center gap-3 overflow-hidden px-4 py-2 text-foreground font-[geist] "
+    onClick={() => {
+      handleViewChange("notification", view);
+    }}
+  >
+    {/* <Phone className="h-5 w-5 text-green-500" /> */}
+    <HugeiconsIcon
+      icon={BarChartIcon}
+      size={24}
+      strokeWidth={1.3}
+      className="text-[#4bb202] rotate-180 mr-[2px]"
+    />
     <div className="flex-1">
-      <p className="pointer-events-none font-medium text-sm text-white">
-        Incoming Call
+      <div className="pointer-events-none text-[14px] text-white flex justify-start items-center">
+        {/* <div className="mr-[5px] text-[#555] ">JAN</div> */}
+        Budget used
+      </div>
+      <div className="flex justify-start items-center">
+        <div className="w-[150px] h-[5px] rounded-full bg-[#ffffff14] mt-[4px] overflow-hidden flex justify-start items-center">
+          <div className="w-[43%] h-full rounded-r-[2px] bg-[#4bb202] shadow-sm "></div>
+        </div>
+        <div className="text-[#fff] text-[12px] ml-[20px] mt-[4px]">
+          {`${((thisMonthExpense / budget) * 100).toFixed(1)}`}%
+        </div>
+      </div>
+      <div className="text-[10px] text-[#4c4c4c] mt-[1px]">
+        {/* {formatAmount(thisMonthExpense)}/{formatAmount(budget)} */}
+        {thisMonthExpense}/{budget}
+      </div>
+      {/* <p className="pointer-events-none text-white text-xs opacity-70">
+        Guillermo Rauch
       </p>
       <p className="pointer-events-none text-white text-xs opacity-70">
         Guillermo Rauch
-      </p>
+      </p> */}
     </div>
-    <div className="h-2 w-2 animate-pulse rounded-full bg-green-500" />
+
+    {/* <div className="min-w-[80px] h-[50px] flex justify-start items-center p-[5px]">
+      <div
+        className="w-[calc(100%/4)] h-full border-x-[1px] border-[#2a2a2a] justify-start items-start"
+        style={{
+          paddingTop: `calc((${weeklyData?.[0]?.amount} / ${thisMonthExpense}) * 50px)`,
+          // paddingTop: `calc( ( ${50} / ${200} ) * 50px )`,
+        }}
+      >
+        <div className={`w-full h-[5px] rounded-full bg-slate-500  `}></div>
+      </div>
+      <div className="w-[calc(100%/4)] h-full border-r-[1px] border-[#2a2a2a] flex justify-start items-end">
+        <div></div>
+      </div>
+      <div className="w-[calc(100%/4)] h-full border-r-[1px] border-[#2a2a2a] flex justify-start items-end">
+        <div></div>
+      </div>
+      <div className="w-[calc(100%/4)] h-full border-r-[1px] border-[#2a2a2a] flex justify-start items-end">
+        <div></div>
+      </div>
+    </div> */}
+    {/* <div className="h-2 w-2 animate-pulse rounded-full bg-green-500" /> */}
   </div>
 );
 
@@ -206,20 +212,63 @@ const DefaultTimer = () => {
 };
 
 // Notification Component
-const Notification = () => (
-  <div className="flex w-64 items-center gap-3 overflow-hidden px-4 py-2 text-foreground">
-    <Bell className="h-5 w-5 text-yellow-400" />
+const Notification = ({
+  thisMonthExpense = 6591,
+  budget = 19000,
+  weeklyData = [
+    {
+      amount: 2024,
+    },
+    {
+      amount: 1500,
+    },
+    {
+      amount: 867,
+    },
+    {
+      amount: 0,
+    },
+  ],
+  handleViewChange,
+  view,
+}) => (
+  <div
+    className="flex w-full items-center gap-3 overflow-hidden px-4 py-2 text-foreground font-[geist] h-[150px]"
+    onClick={() => {
+      handleViewChange("idle", view);
+    }}
+  >
+    {/* <Phone className="h-5 w-5 text-green-500" /> */}
+    <HugeiconsIcon
+      icon={BarChartIcon}
+      size={24}
+      strokeWidth={1.3}
+      className="text-[#4bb202] rotate-180 mr-[2px]"
+    />
     <div className="flex-1">
-      <p className="pointer-events-none font-medium text-sm text-white">
-        New Message
+      <div className="pointer-events-none text-[14px] text-white flex justify-start items-center">
+        {/* <div className="mr-[5px] text-[#555] ">JAN</div> */}
+        Budget used
+      </div>
+      <div className="flex justify-start items-center">
+        <div className="w-[150px] h-[5px] rounded-full bg-[#ffffff14] mt-[4px] overflow-hidden flex justify-start items-center">
+          <div className="w-[43%] h-full rounded-r-[2px] bg-[#4bb202] shadow-sm "></div>
+        </div>
+        <div className="text-[#fff] text-[12px] ml-[20px] mt-[4px]">
+          {`${((thisMonthExpense / budget) * 100).toFixed(1)}`}%
+        </div>
+      </div>
+      <div className="text-[10px] text-[#4c4c4c] mt-[1px]">
+        {/* {formatAmount(thisMonthExpense)}/{formatAmount(budget)} */}
+        {thisMonthExpense}/{budget}
+      </div>
+      {/* <p className="pointer-events-none text-white text-xs opacity-70">
+        Guillermo Rauch
       </p>
       <p className="pointer-events-none text-white text-xs opacity-70">
-        You have a new notification!
-      </p>
+        Guillermo Rauch
+      </p> */}
     </div>
-    <span className="rounded-full bg-yellow-400/40 px-2 py-0.5 text-xs text-yellow-500">
-      1
-    </span>
   </div>
 );
 
@@ -229,7 +278,7 @@ const MusicPlayer = ({ selectedData, bankInfo }) => {
   return (
     // h-[400px]
     <div className="flex flex-col justify-start items-start h-auto w-full overflow-hidden p-[15px]  text-[white] font-[geist]">
-      <div className="w-full text-[12px] text-[#5d5d5d] ">Label</div>
+      {/* <div className="w-full text-[12px] text-[#5d5d5d] ">Label</div>
       <div className="">{selectedData?.transactionName}</div>
       <div className="w-full flex flex-col justify-start items-start text-[14px] mt-[20px]">
         <div className="w-full flex justify-between items-center h-[30px]">
@@ -240,17 +289,19 @@ const MusicPlayer = ({ selectedData, bankInfo }) => {
           <div className="text-[#5d5d5d]">To Bank</div>
           <div>{bankInfo?.bankDataObj?.[selectedData?.to]?.bankName}</div>
         </div>
-      </div>
+      </div> */}
       {/* <div className="w-full flex justify-start items-center">
         <div className="w-[50px] h-[50px] rounded-2xl flex justify-center items-center bg-[#ffffff24]">
-        <HugeiconsIcon
-          icon={DrinkIcon}
-          size={30}
-          strokeWidth={1.8}
-          className="text-[white]"
-        />
-      </div>
-      <div className="whitespace-nowrap w-[calc(100%-60px)] ml-[15px] text-[20px] font-[600] text-ellipsis overflow-hidden ">Salary Credited - By TCS to HDFC Bank for September</div>
+          <HugeiconsIcon
+            icon={DrinkIcon}
+            size={30}
+            strokeWidth={1.8}
+            className="text-[white]"
+          />
+        </div>
+        <div className="whitespace-nowrap w-[calc(100%-60px)] ml-[15px] text-[20px] font-[600] text-ellipsis overflow-hidden ">
+          Salary Credited - By TCS to HDFC Bank for September
+        </div>
       </div>
       <Music2 className="h-5 w-5 text-pink-500" />
       <div className="min-w-0 flex-1">
@@ -301,31 +352,17 @@ export default function DynamicIsland({
   bankInfo,
   setSelectedData,
 }) {
-  const [internalView, setInternalView] = useState("idle");
-  const [variantKey, setVariantKey] = useState("timer-idle");
-  const [stretchKey, setStretchKey] = useState(0);
+  const [internalView, setInternalView] = useState("notification");
+  const [variantKey, setVariantKey] = useState("timer-notification");
+  const [jiggle, setJiggle] = useState(0);
 
   const view = controlledView ?? internalView;
 
-  const content = useMemo(() => {
-    switch (view) {
-      case "ring":
-        return ringContent ?? <DefaultRing />;
-      case "timer":
-        return timerContent ?? <DefaultTimer />;
-      case "notification":
-        return <Notification />;
-      case "music":
-        return <MusicPlayer selectedData={selectedData} bankInfo={bankInfo} />;
-      default:
-        return idleContent ?? <DefaultIdle />;
-    }
-  }, [view, idleContent, ringContent, timerContent, selectedData]);
-
-  const handleViewChange = (newView) => {
+  const handleViewChange = (newView, view) => {
+    console.log(newView);
     if (view === newView) {
-      // 🔥 Trigger stretch animation
-      setStretchKey((k) => k + 1);
+      // 🔥 Trigger jiggle if same view clicked
+      setJiggle((j) => j + 1);
       return;
     }
 
@@ -338,32 +375,58 @@ export default function DynamicIsland({
     }
   };
 
+  const content = useMemo(() => {
+    switch (view) {
+      case "ring":
+        return (
+          ringContent ?? (
+            <DefaultRing handleViewChange={handleViewChange} view={view} />
+          )
+        );
+      case "timer":
+        return (
+          timerContent ?? (
+            <DefaultTimer handleViewChange={handleViewChange} view={view} />
+          )
+        );
+      case "notification":
+        return <Notification handleViewChange={handleViewChange} view={view} />;
+      case "music":
+        return (
+          <MusicPlayer
+            handleViewChange={handleViewChange}
+            view={view}
+            selectedData={selectedData}
+            bankInfo={bankInfo}
+          />
+        );
+      default:
+        return (
+          idleContent ?? (
+            <DefaultIdle handleViewChange={handleViewChange} view={view} />
+          )
+        );
+    }
+  }, [view, idleContent, ringContent, timerContent, selectedData]);
+
   return (
     <div className={`h-auto w-full ${className} `}>
       <div
         className={
-          "pt-[20px] z-50 flex  fixed bottom-[90px] left-0 min-w-full flex-col items-center justify-start bg-transparent px-[20px]" +
+          "pt-[20px] z-[200] flex  fixed top-[0px] left-0 min-w-full flex-col items-center justify-start bg-transparent px-[20px]" +
           (selectedData?.transactionName?.length > 0
             ? " h-[100svh] backdrop-blur-md"
             : " h-auto")
         }
-        onClick={() => {
-          setSelectedData({});
-        }}
+        // onClick={() => {
+        //   setSelectedData({});
+        // }}
       >
         <motion.div
-          key={stretchKey} // 👈 forces replay
-          className="w-fit overflow-hidden rounded-full bg-[#8f8f8f2f] border border-[#8f8f8f18] z-[60] backdrop-blur-lg drop-shadow-xl"
+          className=" w-auto overflow-hidden rounded-full bg-[#8f8f8f2f] border border-[#8f8f8f18] z-[60] backdrop-blur-lg drop-shadow-xl"
           layout
-          style={{ borderRadius: 40 }}
-          animate={{
-            scaleX: stretchKey ? [1, 1.12, 0.96, 1] : 1,
-          }}
+          style={{ borderRadius: 20 }}
           transition={{
-            scaleX: {
-              duration: 0.35,
-              ease: "easeInOut",
-            },
             type: "spring",
             bounce: BOUNCE_VARIANTS[variantKey] ?? DEFAULT_BOUNCE,
           }}
@@ -394,7 +457,7 @@ export default function DynamicIsland({
           </motion.div>
         </motion.div>
 
-        <div className="-translate-x-1/2 absolute bottom-[300px] left-1/2 z-10 flex justify-center gap-1 rounded-full border bg-background p-1 ">
+        <div className="-translate-x-1/2 absolute -bottom-[300px] left-1/2 z-10 flex justify-center gap-1 rounded-full border bg-background p-1 ">
           {[
             { key: "idle", icon: <CloudLightning className="size-3" /> },
             { key: "ring", icon: <Phone className="size-3" /> },
