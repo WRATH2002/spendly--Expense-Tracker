@@ -945,7 +945,7 @@ export default function AddSplitTransactionModal({
               <></>
             )}
           </div>
-          <div className="min-h-[90px] w-full flex justify-center items-center font-[700] px-[20px] p-[5px] text-[#000] text-[14px]">
+          {/* <div className="min-h-[90px] w-full flex justify-center items-center font-[700] px-[20px] p-[5px] text-[#000] text-[14px]">
             <PowerOffSlide
               duration={1500}
               label="Slide to power off"
@@ -954,8 +954,8 @@ export default function AddSplitTransactionModal({
                 console.log("Power Off Triggered");
               }}
             />
-          </div>
-          {/* <div
+          </div> */}
+          <div
             className={
               "mt-[0px] rounded-lg w-full min-h-[50px] flex justify-center items-center font-[700] bg-[#fff] text-[#000] text-[14px]" +
               (checkPreparedness() ? " opacity-100" : " opacity-30")
@@ -968,7 +968,7 @@ export default function AddSplitTransactionModal({
             }}
           >
             Add Transaction
-          </div> */}
+          </div>
         </div>
       </div>
     </>
